@@ -17,17 +17,20 @@ categories:
 
 变量名    | 变量值
 ----------|-------------------------------------------
-JAVA_HOME | C:\Program Files\Java\jdk1.8.0_131<修改为自己的JDK安装地址>
-Path      | ;%JAVA_HOME%\bin;
-		  |%JAVA_HOME%\jre\bin
-CLASSPATH | .;%JAVA_HOME%\lib;
+JAVA_HOME |C:\Program Files\Java\jdk1.8.0_131<修改为自己的JDK安装地址>
+Path      |;%JAVA_HOME%\bin;
+		  |%JAVA_HOME%\jre\bin;
+CLASSPATH |.;%JAVA_HOME%\lib;
 		  |%JAVA_HOME%\lib\dt.jar;
-		  |%JAVA_HOME%\lib\tools.jar
+		  |%JAVA_HOME%\lib\tools.jar;
 
+【本文仅为学习目的，如有侵权，请联系我删除】
 <!-- more -->
+
+两个表格内容一致，第二个表格未进行分行，方便旧操作系统添加环境变量。
 
 变量名    | 变量值
 ----------|-------------------------------------------
-JAVA_HOME | C:\Program Files\Java\jdk1.8.0_131<修改为自己的JDK安装地址>
-Path      | ;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin
-CLASSPATH | .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar
+JAVA_HOME |C:\Program Files\Java\jdk1.8.0_131<修改为自己的JDK安装地址>
+Path      |;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;
+CLASSPATH |.;%JAVA_HOME%\lib;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;

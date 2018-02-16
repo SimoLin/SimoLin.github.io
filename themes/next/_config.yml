@@ -136,7 +136,7 @@ font:
 # Reward Settings
 # ---------------------------------------------------------------
 
-reward_comment: 坚持原创技术分享，您的支持将鼓励我继续创作！
+reward_comment: 坚持原创与技术分享，您的支持将鼓励我继续创作！
 wechatpay: /images/wechat-reward-image.png
 alipay: /images/alipay-reward-image.jpg
 
@@ -224,7 +224,7 @@ links:
   #Title: http://example.com/
   # Github: https://github.com/
   肥锐's 技术栈: http://www.whbxyr.cn/
-  biezhi's Blog: http://www.curiooosity.com/
+  #biezhi's Blog: http://www.curiooosity.com/
   huim: http://huim.me/
 # since: 2013
 
