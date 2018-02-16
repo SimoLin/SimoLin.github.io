@@ -34,3 +34,6 @@ CLASSPATH |.;%JAVA_HOME%\lib;
 JAVA_HOME |C:\Program Files\Java\jdk1.8.0_131<修改为自己的JDK安装地址>
 Path      |;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;
 CLASSPATH |.;%JAVA_HOME%\lib;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;
+
+
+最后更新时间：2018年2月16日 15:46:32

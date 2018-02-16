@@ -90,3 +90,5 @@ del /f /s /q "%userprofile%\Local Settings\Temp\*.*"
 del /f /s /q "%userprofile%\recent\*.*"
 echo 清理系统垃圾完成！
 ```
+
+最后更新时间：2018年2月16日 15:46:03
