@@ -64,7 +64,7 @@ git clone git@github.com:SimoLin/SimoLin.github.io.git
 hexo init
 npm install hexo-deployer-git --save
 ```
-使用前文中备份./git目录，替换hexo init生成的./git文件夹
+使用前文中备份的./git目录，替换hexo init生成的./git文件夹
 
 ### 修改配置文件
 
@@ -96,6 +96,9 @@ git add .
 
 # 编写更新的描述
 git commit -m "<更新描述>"
+
+## 如果不知道写什么描述可以随便写
+## 比如 git commit -m "update"
 
 # 提交更新到hexo分支
 git push origin hexo
