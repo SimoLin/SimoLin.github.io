@@ -3,7 +3,6 @@ title: OpenDaylight BGP 简介(Introduction)
 date: 2018-02-17 20:47:14
 tags:
 - OpenDaylight
-- BGP
 categories:
 - OpenDaylight
 ---

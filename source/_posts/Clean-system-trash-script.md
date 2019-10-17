@@ -3,7 +3,6 @@ title: 一键清理系统垃圾文件脚本(Clean system trash script)
 date: 2018-02-16 15:16:08
 tags:
 - script
-- bat
 categories:
 - script
 ---

@@ -3,7 +3,6 @@ title: Python_Pygame_SnakeGame 贪吃蛇小游戏 代码修改（增加障碍物
 date: 2017-06-07 20:12:57
 tags:
 - Python
-- Pygame
 categories:
 - Python
 ---
