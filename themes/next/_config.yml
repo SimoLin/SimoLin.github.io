@@ -171,7 +171,7 @@ sidebar:
   # Sidebar offset from top menubar in pixels (only for Pisces | Gemini).
   offset: 12
   # Enable sidebar on narrow view (only for Muse | Mist).
-  onmobile: false
+  onmobile: ture
 
 # Sidebar Avatar
 avatar:
@@ -459,7 +459,7 @@ font:
   global:
     external: true
     family: Noto Serif SC
-    size: 1
+    size: 0.9
 
   # Font settings for site title (.site-title).
   title:
@@ -482,7 +482,7 @@ font:
   codes:
     external: true
     family:
-
+    size: 0.9
 
 # ---------------------------------------------------------------
 # SEO Settings
