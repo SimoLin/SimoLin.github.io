@@ -2,9 +2,9 @@
 title: Java JDK 配置环境变量(environment variables configuration)
 date: 2018-02-14 20:22:07
 tags:
-- Java
+- 教程
 categories:
-- Java
+- 教程
 ---
 
 

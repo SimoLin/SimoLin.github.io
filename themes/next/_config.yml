@@ -481,8 +481,8 @@ font:
   # Font settings for <code> and code blocks.
   codes:
     external: true
-    family:
-    size: 0.9
+    family: Noto Serif SC
+    size: 1
 
 # ---------------------------------------------------------------
 # SEO Settings

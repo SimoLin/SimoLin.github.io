@@ -1,0 +1,556 @@
+---
+title: Jenkins SonarQube Tomcat 部署指引 问题记录
+date: 2019-10-21 20:13:43
+tags:
+- Jenkins
+- SonarQube
+categories:
+- 教程
+---
+
+很久之前尝试部署了一套 Jenkins+SonarQube+Tomcat 的环境
+
+本文仅为记录相关的部署过程
+以及过程中遇到的问题和解决方法
+
+仅供参考
+
+【本文仅为学习目的，如有侵权，请联系我删除】
+<!-- more -->
+
+
+# 版本信息
+
+名称          | 版本      | 文件路径
+--------------|-----------|-------------------------------------------
+Ubuntu        | 16.04     | 默认安装
+Java jdk      | 1.8.0_171 | /usr/jdk1.8.0_171
+Apache Tomcat | 8.5.32    | /usr/apache-tomcat-8.5.32
+Jenkins       | 2.134     | /usr/apache-tomcat-8.5.32/webapps/jenkins
+MySQL         | 5.6.40    | 默认安装
+svn           | 1.8.8     | 默认安装
+SonarQube     | 7.2.1     | /usr/sonarqube-7.2.1
+Sonar-Scanner | 3.2.0.1227| /usr/sonar-scanner-3.2.0.1227-linux
+
+# Java JDK安装
+配置环境变量
+```
+$ sudo gedit /etc/profile
+```
+末尾（或适当位置）加入内容
+```
+# JAVA_HOME 需要改成自己的jdk地址
+export JAVA_HOME=/usr/jdk1.8.0_171
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export  PATH=${JAVA_HOME}/bin:$PATH
+```
+使环境变量生效
+```
+$ source /etc/profile
+```
+# Apache Tomcat安装
+配置tomcat启动环境变量
+```
+# 需要根据自己的Apache安装地址进行修改
+$ gedit /usr/apache-tomcat-8.5.32/bin/startup.sh
+和
+$ gedit /usr/apache-tomcat-8.5.32/bin/shutdown.sh
+```
+开头（或适当位置）加入内容
+```
+# JAVA_HOME 需要改成自己的jdk地址
+JAVA_HOME=/usr/jdk1.8.0_171
+JRE_HOME=${JAVA_HOME}/jre
+PATH=$JAVA_HOME/bin:$PATH
+CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+# TOMCAT_HOME 需要改成自己的Apache地址
+TOMCAT_HOME=/usr/apache-tomcat-8.5.32
+```
+将Jenkins.war包放入/usr/apache-tomcat-8.5.32/webapps下
+
+启动Tomcat
+```
+sudo /usr/apache-tomcat-8.5.32/bin/startup.sh
+```
+关闭Tomcat
+```
+sudo /usr/apache-tomcat-8.5.32/bin/shutdown.sh
+```
+# MySQL安装
+修改文件加入可用的源：
+```
+$ sudo gedit /etc/apt/sources.list
+```
+开头（或适当位置）加入内容：
+```
+deb http://archive.ubuntu.com/ubuntu/ trusty main universe restricted multiverse
+```
+更新源
+```
+$ apt-get update
+```
+安装MySQL服务
+```
+$ apt-get install mysql-server
+$ apt-get isntall mysql-client
+$ sudo apt-get install libmysqlclient-dev
+```
+上面的方法没用时尝试使用以下命令
+```
+$ wget http://dev.mysql.com/get/mysql-apt-config_0.2.1-1debian7_all.deb
+# 安装时选1，使用5.6版本
+$ dpkg -i mysql-apt-config_0.2.1-1debian7_all.deb
+```
+同理更新源并安装MySQL服务
+```
+$ apt-get update
+$ apt-get install mysql-server
+$ apt-get isntall mysql-client
+$ sudo apt-get install libmysqlclient-dev
+```
+## MySQL简单操作
+```
+# 通过下述命令检查，如果看到有mysql的socket处于listen状态则表示安装成功
+$ sudo netstat -tap | grep mysql
+```
+```
+# 登陆mysql数据库可以通过如下命令：
+$ mysql -u root -p 
+# -u 表示选择登陆的用户名
+# -p 表示登陆的用户密码
+# 上面命令输入之后会提示输入密码，此时输入密码就可以登录到mysql
+
+# 新建数据库sonar
+mysql> create database sonar;
+
+# 查看当前所有的数据库
+mysql> show databases;
+
+# 选择数据库
+mysql> use [数据库名称]
+
+# 显示当前数据库的所有表单
+mysql> show tables;
+
+# 创建数据库
+mysql> create database [数据库名称];
+
+# 删除数据库
+mysql> drop database [数据库名称];
+```
+启动MySQL
+```
+$ service mysql start
+```
+有问题需要重启的话
+```
+$ service mysql restart
+```
+
+# svn安装
+安装svn
+```
+# 安装svn
+sudo apt install subversion
+```
+## svn简单操作
+```
+# 通过下述命令检查，如果看到有提示版本信息则表示安装成功
+$ svnserve --version
+```
+```
+# 创建svn资源仓库
+$ svnadmin create /svndir
+
+#进入对应目录
+$ cd /svndir/
+$ ls
+conf  db  format  hooks  locks  README.txt
+$ cd conf/
+$ ls
+authz  passwd  svnserve.conf
+
+# 已经看到在仓库下面生成了三个文件 
+# authz 权限配置文件 
+# passwd 用户名密码文件 
+# svnserve.conf 资源库配置文件
+```
+
+配置用户文件
+```
+$ gedit passw
+[users]
+# 新增simo帐号
+simo = root
+~
+```
+配置访问权限
+```
+$ vim authz
+[groups]
+# simo账户分配到amin用户组
+admin = simo
+
+[/]
+# * = r 表示所有用户有读权限 
+* = r
+# admin 读写权限
+@admin = rw
+
+# 定义项目的根目录 
+[svndir:/]
+* = r
+@admin = rw
+```
+修改服务器配置文件
+```
+$ vim svnserve.conf
+# 匿名用户可读
+anon-access = read
+# 授权用户可写
+auth-access = write
+# 使用哪个文件作为账号文件
+password-db = passwd
+# 使用哪个文件作为权限文件
+authz-db = authz
+# 认证空间名，版本库所在目录
+realm = svndir
+```
+启动或者重启服务
+```
+$ svnserve -d -r /usr/svndir
+```
+
+
+# Sonar安装
+```
+# 需要改成自己的Sonarqube地址
+$ gedit /usr/sonarqube-7.2.1/conf/sonar.properties
+```
+添加/修改内容：
+```
+# 数据库帐号
+sonar.jdbc.username=root
+# 数据库密码
+sonar.jdbc.password=root
+sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false
+sonar.web.host=0.0.0.0
+sonar.web.context=
+# web端口，默认为9000
+sonar.web.port=9000
+# 编码方式，默认为UTF-8
+sonar.sorceEncoding=UTF-8
+```
+修改语言为中文
+```
+市场Market里下载Chinese Pack包并重启即可
+```
+运行
+```
+/usr/sonarqube-7.2.1/bin/linux-x86-64/sonar.sh start
+```
+## Sonar日志位置：
+- /usr/sonarqube-7.2.1/logs/sonar.log
+- /usr/sonarqube-7.2.1/logs/es.log
+- /usr/sonarqube-7.2.1/elasticsearch/
+
+## 问题1：
+```
+Failed to start SonarQube.
+```
+
+日志提示：
+```
+Unable to start JVM: No such file or directory (2)
+或
+Unable to start JVM: Permission denied (13)
+```
+解决方式：
+
+修改conf文件夹下的wrapper.conf文件，
+```
+# 需要改成自己的Sonarqube地址
+$ gedit /usr/sonarqube-7.2.1/conf/wrapper.conf
+```
+开头（或适当位置）增加/修改内容：
+```
+# 需要改成自己的jdk地址
+wrapper.java.command=/usr/jdk1.8.0_171/bin/java
+```
+## 问题2：
+```
+started之后无法启动/启动失败
+```
+日志记录：
+```
+--> Wrapper Started as Daemon
+Launching a JVM...
+Wrapper (Version 3.2.3) http://wrapper.tanukisoftware.org
+  Copyright 1999-2006 Tanuki Software, Inc.  All Rights Reserved.
+2018.07.17 21:12:22 INFO  app[][o.s.a.AppFileSystem] Cleaning or creating temp directory /home/simo/桌面/sonarqube-7.2.1/temp
+2018.07.17 21:12:22 INFO  app[][o.s.a.es.EsSettings] Elasticsearch listening on /127.0.0.1:9001
+2018.07.17 21:12:22 INFO  app[][o.s.a.p.ProcessLauncherImpl] Launch process[[key='es', ipcIndex=1, logFilenamePrefix=es]] from [/home/simo/桌面/sonarqube-7.2.1/elasticsearch]: /home/simo/桌面/sonarqube-7.2.1/elasticsearch/bin/elasticsearch -Epath.conf=/home/simo/桌面/sonarqube-7.2.1/temp/conf/es
+2018.07.17 21:12:22 INFO  app[][o.s.a.SchedulerImpl] Waiting for Elasticsearch to be up and running
+Startup failed: Timed out waiting for signal from JVM.
+JVM did not exit on request, terminated
+JVM exited on its own while waiting to kill the application.
+JVM exited in response to signal SIGKILL (9).
+JVM Restarts disabled.  Shutting down.
+<-- Wrapper Stopped
+```
+解决方式：
+```
+不要用root权限/sudo运行
+```
+## 问题3：
+```
+started之后无法启动/启动失败
+```
+日志记录：
+```
+--> Wrapper Started as Daemon
+Launching a JVM...
+Wrapper (Version 3.2.3) http://wrapper.tanukisoftware.org
+  Copyright 1999-2006 Tanuki Software, Inc.  All Rights Reserved.
+
+2018.07.18 14:08:10 INFO  app[][o.s.a.AppFileSystem] Cleaning or creating temp directory /usr/sonarqube-7.2.1/temp
+2018.07.18 14:08:10 INFO  app[][o.s.a.es.EsSettings] Elasticsearch listening on /127.0.0.1:9001
+2018.07.18 14:08:10 INFO  app[][o.s.a.p.ProcessLauncherImpl] Launch process[[key='es', ipcIndex=1, logFilenamePrefix=es]] from [/usr/sonarqube-7.2.1/elasticsearch]: /usr/sonarqube-7.2.1/elasticsearch/bin/elasticsearch -Epath.conf=/usr/sonarqube-7.2.1/temp/conf/es
+2018.07.18 14:08:10 INFO  app[][o.s.a.SchedulerImpl] Waiting for Elasticsearch to be up and running
+Java HotSpot(TM) 64-Bit Server VM warning: INFO: os::commit_memory(0x00000000e0000000, 178913280, 0) failed; error='Cannot allocate memory' (errno=12)
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 178913280 bytes for committing reserved memory.
+# An error report file with more information is saved as:
+# /usr/sonarqube-7.2.1/elasticsearch/hs_err_pid11395.log
+2018.07.18 14:08:11 WARN  app[][o.s.a.p.AbstractProcessMonitor] Process exited with exit value [es]: 1
+2018.07.18 14:08:11 INFO  app[][o.s.a.SchedulerImpl] Process [es] is stopped
+2018.07.18 14:08:11 INFO  app[][o.s.a.SchedulerImpl] SonarQube is stopped
+FATAL StatusLogger Interrupted before Log4j Providers could be loaded.
+ java.lang.InterruptedException
+	at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireInterruptibly(AbstractQueuedSynchronizer.java:1220)
+	at java.util.concurrent.locks.ReentrantLock.lockInterruptibly(ReentrantLock.java:335)
+	at org.apache.logging.log4j.util.ProviderUtil.lazyInit(ProviderUtil.java:121)
+	at org.apache.logging.log4j.util.ProviderUtil.hasProviders(ProviderUtil.java:108)
+	at org.apache.logging.log4j.LogManager.<clinit>(LogManager.java:89)
+	at org.elasticsearch.common.logging.ESLoggerFactory.getLogger(ESLoggerFactory.java:54)
+	at org.elasticsearch.common.logging.Loggers.getLogger(Loggers.java:105)
+	at org.elasticsearch.common.logging.Loggers.getLogger(Loggers.java:72)
+	at org.elasticsearch.common.component.AbstractComponent.<init>(AbstractComponent.java:37)
+	at org.elasticsearch.plugins.PluginsService.<init>(PluginsService.java:97)
+	at org.elasticsearch.client.transport.TransportClient.newPluginService(TransportClient.java:101)
+	at org.elasticsearch.client.transport.TransportClient.buildTemplate(TransportClient.java:126)
+	at org.elasticsearch.client.transport.TransportClient.<init>(TransportClient.java:254)
+	at org.sonar.application.es.EsConnectorImpl$MinimalTransportClient.<init>(EsConnectorImpl.java:104)
+	at org.sonar.application.es.EsConnectorImpl.buildTransportClient(EsConnectorImpl.java:90)
+	at org.sonar.application.es.EsConnectorImpl.getTransportClient(EsConnectorImpl.java:75)
+	at org.sonar.application.es.EsConnectorImpl.getClusterHealthStatus(EsConnectorImpl.java:62)
+	at org.sonar.application.process.EsProcessMonitor.checkStatus(EsProcessMonitor.java:90)
+	at org.sonar.application.process.EsProcessMonitor.checkOperational(EsProcessMonitor.java:75)
+	at org.sonar.application.process.EsProcessMonitor.isOperational(EsProcessMonitor.java:60)
+	at org.sonar.application.process.SQProcess.refreshState(SQProcess.java:161)
+	at org.sonar.application.process.SQProcess$EventWatcher.run(SQProcess.java:220)
+ERROR StatusLogger Log4j2 could not find a logging implementation. Please add log4j-core to the classpath. Using SimpleLogger to log to the console...
+<-- Wrapper Stopped
+```
+解决方式：
+
+总结：给虚拟机2G内存以上（建议直接给4G）
+
+或者使用下述官方解决方案：
+
+```
+如果你使用的是Linux系统，确保如下参数满足条件
+- vm.max_map_count 大于262144
+- fs.file-max 大于等于 65536
+- 运行SonarQube的用户可以打开的文件描述符大于等于 65536
+- 运行SonarQube的用户可以打开线程数大于等于 2048
+```
+你可以使用下述命令查看各个参数值:
+```
+$ sysctl vm.max_map_count
+$ sysctl fs.file-max
+$ ulimit -n
+$ ulimit -u
+```
+你可以使用下述命令动态修改参数（sudo运行）:
+```
+$ sysctl -w vm.max_map_count=262144
+$ sysctl -w fs.file-max=65536
+$ ulimit -n 65536
+$ ulimit -u 2048
+```
+## 问题4：
+```
+started之后无法启动/启动失败
+```
+日志记录：
+
+```
+WARN  app[][o.s.a.p.AbstractProcessMonitor] Process exited with exit value [es]: 143
+```
+解决方式：
+```
+在MySQL新建数据库sonar
+mysql> create database sonar;
+```
+
+# SonarQube token
+```
+# 每个人不一样，使用自己的token
+admin: 698151c6a8d7fc81f6b7e63fdea8761cab1dfa12
+```
+# maven 配置
+```
+# 每个人不一样，使用自己的token
+mvn sonar:sonar
+  -Dsonar.host.url=http://192.168.52.130:9000
+  -Dsonar.login=698151c6a8d7fc81f6b7e63fdea8761cab1dfa12
+```
+
+# SonarScanner安装
+```
+$ gedit /usr/sonar-scanner-3.2.0.1227-linux/conf/sonar-scanner.properties
+```
+开头（或适当位置）添加/修改内容：
+```
+# sonar.host.url配置的是SonarQube服务器的地址
+sonar.host.url=http://localhost:9000
+sonar.login=admin
+sonar.password=admin
+```
+
+添加环境变量
+```
+$ sudo gedit /etc/profile
+```
+末尾（或适当位置）加入内容
+```
+# 需要改成自己的sonar-scanner地址
+export PATH=$PATH:/usr/sonar-scanner-3.2.0.1227-linux/bin
+```
+使环境变量生效
+```
+$ source /etc/profile
+```
+在要扫描的webapp目录下新建文件 sonar-project.properties
+```
+# sonar-project.properties内容如下
+# 项目的key
+sonar.projectKey=project_key
+# 项目的名字
+sonar.projectName=Java-EE-VulnWeb
+# 项目的版本
+sonar.projectVersion=1.0
+# 需要分析的源码的目录，多个目录用英文逗号隔开
+sonar.sources=/usr/sonar-scanner-3.2.0.1227-linux/webapps/
+# 需要扫描哪种语言的代码，如python:py，java:java
+sonar.language=java
+# 编码格式
+sonar.sourceEncoding=UTF-8
+sonar.java.binaries=./
+```
+在要扫描的webapp目录下
+
+运行命令进行分析
+```
+$ /usr/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner
+# -X debug模式，输出详细信息
+```
+
+# Jenkins配置
+
+
+## 全局配置
+
+### SonarQube
+
+SonarQube
+
+http://192.168.3.34:9000
+
+{% asset_img 1.png %}
+
+### Subversion Workspace Version
+
+选择1.8
+
+{% asset_img 2.png %}
+
+## 全局工具配置
+
+### JDK
+
+JDK1.8.0_171
+
+/usr/jdk1.8.0_171
+
+{% asset_img 3.png %}
+
+### SonarScanner
+
+SonarQubeScanner
+
+/usr/sonar-scanner-3.2.0.1227-linux
+
+{% asset_img 4.png %}
+
+## 项目配置
+
+### svn
+
+svn://192.168.3.34
+
+{% asset_img 5.png %}
+
+触发器H/5 * * * *
+
+{% asset_img 6.png %}
+
+{% asset_img 7.png %}
+
+```
+# sonar-project.properties内容如下
+# 项目的key
+sonar.projectKey=spring-mvc-showcase
+# 项目的名字
+sonar.projectName=spring-mvc-showcase
+# 项目的版本
+sonar.projectVersion=1.0
+# 需要分析的源码的目录，多个目录用英文逗号隔开
+sonar.sources=./spring-mvc-showcase
+# 需要扫描哪种语言的代码，如python:py，java:java
+sonar.language=java
+# 编码格式
+sonar.sourceEncoding=UTF-8
+sonar.java.binaries=./
+```
+
+{% asset_img 8.png %}
+
+```
+python3 /usr/sonar2file.py StuAMSystem
+```
+
+{% asset_img 9.png %}
+
+```
+clean
+package
+```
+
+{% asset_img 10.png %}
+
+```
+mv /root/.jenkins/workspace/SonarTest/spring-mvc-showcase/target/spring-mvc-showcase.war /usr/apache-tomcat-8.5.32/webapps/
+```
+
+{% asset_img 11.png %}
+
+
+# 文章更新历史
+
+时间|更新内容
+:-:|---
+2019-10-21 20:20:40|新建文章

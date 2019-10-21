@@ -27,6 +27,7 @@ categories:
 名称|地址|简介
 ---|---|---
 Ph0en1x Tools|https://tool.ph0en1x.com/hashtool/tools.html|在线Hash编码转换
+CEYE|http://ceye.io/|DNS记录
 Netcraft - Search Web by Domain|https://searchdns.netcraft.com/|查询域名历史解析IP
 JSON Web Token - Decode|http://jwt.calebb.net|JWT token解密
 JSON Web Tokens - jwt.io|https://jwt.io/|JWT token解密
