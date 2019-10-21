@@ -1,5 +1,5 @@
 ---
-title: 全球华人网络安全技能大赛(GCTF)初赛 Writeup 总结
+title: 全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup)
 date: 2017-06-13 13:43:46
 tags:
 - CTF

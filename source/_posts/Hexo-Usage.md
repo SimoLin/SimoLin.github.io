@@ -1,5 +1,5 @@
 ---
-title: 使用Hexo在Github上搭建Blog
+title: 使用Hexo在Github上搭建Blog(Hexo Usage)
 date: 2019-10-16 14:54:26
 tags:
 - Hexo
