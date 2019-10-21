@@ -1,5 +1,5 @@
 ---
-title: Python_Pygame_SnakeGame 贪吃蛇小游戏 代码修改（增加障碍物）
+title: Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification)
 date: 2017-06-07 20:12:57
 tags:
 - Python
