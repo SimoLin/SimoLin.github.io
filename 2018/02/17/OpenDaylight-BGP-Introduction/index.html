@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"simolin.cn","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="偶然学习了一点点  ODL(OpenDaylight) BGP(Border Gateway Protocol,边界网关协议)  学得皮毛，总结一下也算一个小收获如果能对其他人有所帮助，那就更好了 【本文仅为学习目的，如有侵权，请联系我删除】">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenDaylight BGP 简介(OpenDaylight BGP Introduction)">
+<meta property="og:url" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/index.html">
+<meta property="og:site_name" content="Simo Lin&#39;s blog">
+<meta property="og:description" content="偶然学习了一点点  ODL(OpenDaylight) BGP(Border Gateway Protocol,边界网关协议)  学得皮毛，总结一下也算一个小收获如果能对其他人有所帮助，那就更好了 【本文仅为学习目的，如有侵权，请联系我删除】">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/1.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/2.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/3.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/4.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/5.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/6.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/7.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/8.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/9.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/10.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/11.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/12.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/13.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/14.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/15.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/16.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/17.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/18.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/19.png">
+<meta property="og:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/20.png">
+<meta property="article:published_time" content="2018-02-17T12:47:14.000Z">
+<meta property="article:modified_time" content="2020-05-24T01:56:24.790Z">
+<meta property="article:author" content="Simo Lin">
+<meta property="article:tag" content="OpenDaylight">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/1.png">
+
+<link rel="canonical" href="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>OpenDaylight BGP 简介(OpenDaylight BGP Introduction) | Simo Lin's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Simo Lin's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Simo Lin's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-favorite">
+
+    <a href="/favorite/" rel="section"><i class="fa fa-fw fa-star"></i>favorite</a>
+
+  </li>
+        <li class="menu-item menu-item-comments">
+
+    <a href="/comments/" rel="section"><i class="fa fa-fw fa-comments"></i>comments</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Simo Lin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simo Lin's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OpenDaylight BGP 简介(OpenDaylight BGP Introduction)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-02-17 20:47:14" itemprop="dateCreated datePublished" datetime="2018-02-17T20:47:14+08:00">2018-02-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-24 09:56:24" itemprop="dateModified" datetime="2020-05-24T09:56:24+08:00">2020-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OpenDaylight/" itemprop="url" rel="index"><span itemprop="name">OpenDaylight</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/02/17/OpenDaylight-BGP-Introduction/" class="post-meta-item leancloud_visitors" data-flag-title="OpenDaylight BGP 简介(OpenDaylight BGP Introduction)" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>偶然学习了一点点</p>
+<ul>
+<li>ODL(OpenDaylight)</li>
+<li>BGP(Border Gateway Protocol,边界网关协议)</li>
+</ul>
+<p>学得皮毛，总结一下也算一个小收获<br>如果能对其他人有所帮助，那就更好了</p>
+<p>【本文仅为学习目的，如有侵权，请联系我删除】</p>
+<a id="more"></a>
+
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>随着互联网的普及和用户数量的剧增，原本的网络不堪重负。<br>移动终端发展势如破竹，智能手机不断更新换代，手机软件层出不穷，用户随时随地上网，<br>导致流量需求与日俱增，负荷过度的网络无法满足用户需求。</p>
+<p>原有的网络体系庞大，架构臃肿，不够灵活，不能适应不断涌现出的新业务需求，服务质量得不到保证。<br>网络体系复杂，网络操作需要与其他IT操作的集成与协作，导致网络部署困难。<br>网络更新麻烦，动手操作过多，网络管理员分身乏术。<br>改良已经无法解决现有的网络问题，网络改革势在必行，于是SDN应运而生。</p>
+<p>SDN是美国斯坦福大学clean slate研究组提出的一种新型网络架构。<br>传统网络采用分布式策略工作，由设备制定转发策略，而SDN架构中设备不运行任何协议，<br>转发表由控制器下发给设备，实现数据平台与控制平台的分离。<br>SDN的核心思想就是控制与转发分离，将软件应用到网络控制中，并起到主导作用，而不是由固定模式的协议控制网络。<br>SDN的目的是提高网络的可控性与可编程性，可以根据用户需求灵活地提供不同质量等级的服务。</p>
+<p>ODL是由Linux基金会推出的一个开源项目，集聚了行业中领先的供应商和Linux基金会的一些成员。<br>其目的在于通过开源的方式创建共同的供应商支持框架，不依赖于某一个供应商，<br>竭力创造一个供应商中立的开放环境，每个人都可以贡献自己的力量，从而不断推动SDN的部署和创新。<br>打造一个共同开放的SDN平台，在这个平台上进行SDN普及与创新，供开发者来利用、贡献和构建商业产品及技术。<br>ODL的终极目标是建立一套标准化软件，帮助用户以此为基础开发出具有附加值的应用程序。</p>
+<h1 id="OpenDaylight（ODL）"><a href="#OpenDaylight（ODL）" class="headerlink" title="OpenDaylight（ODL）"></a>OpenDaylight（ODL）</h1><p>OpenDaylight，当今最大的开源SDN控制器项目，正推动SDN思想的实现，加速网络领域的创新。</p>
+<h2 id="ODL控制器"><a href="#ODL控制器" class="headerlink" title="ODL控制器"></a>ODL控制器</h2><p>ODL拥有一套模块化、可插拔灵活地控制平台作为核心，<br>这个控制平台基于Java开发，理论上可以运行在任何支持Java的平台上，<br>从Helium版本开始其官方文档推荐的最佳运行环境是最新的Linux（Ubuntu 12.04+）及JVM1.7+。</p>
+<p>ODL控制器采用OSGi框架，OSGi框架是面向Java的动态模型系统，它实现了一个优雅、完整和动态的组件模型，<br>应用程序（Bundle）无需重新引导可以被远程安装、启动、升级和卸载，<br>通过OSGi捆绑可以灵活地加载代码与功能，实现功能隔离，解决了功能模块可扩展问题，<br>同时方便功能模块的加载与协同工作。自Helium版本开始使用Karaf架构，作为轻量级的OSGi架构，<br>相较于早前版本的OSGi提升了交互体验和效率，当然其特性远不仅仅于此。</p>
+<p>ODL控制平台引入了SAL（服务抽象层 ），SAL北向连接功能模块，以插件的形式为之提供底层设备服务，<br>南向连接多种协议，屏蔽不同协议的差异性，为上层功能模块提供一致性服务，使得上层模块与下层模块之间的调用相互隔离。<br>SAL可自动适配底层不同设备，使开发者专注于业务应用的开发。</p>
+<p>此外，ODL从Helium开始也逐渐完成了从AD-SAL（Application Driven Service Abstraction Layer）向MD-SAL（Model Driven Service Abstraction Layer）的演进工作，<br>早前的AD-SAL，ODL控制平台采用了Infinispan技术，Inﬁnispan是一个高扩展性、高可靠性、键值存储的分布式数据网格平台，<br>选用Infinispan来实现数据的存储、查找及监听，用开源网格平台实现controller的集群。<br>MD-SAL架构中采用Akka实现分布式messageing。</p>
+<h2 id="ODL控制器架构"><a href="#ODL控制器架构" class="headerlink" title="ODL控制器架构"></a>ODL控制器架构</h2><p>如图所示，ODL控制器主要包括开放的北向API，控制器平面，以及南向接口和协议插件。<br>北向API有OSGI和REST两类，同一地址空间应用使用OSGI类，而不同地址空间的应用则使用REST类。<br>OSGI是有状态的连接，有注册机制，而rest是无状态链接。<br>上层应用程序利用这些北向API获得网络智能信息、运行算法进行分析并且设计部署新的网络策略。</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/1.png" class="">
+
+<p>控制器平台包括一系列功能模块，可动态组合提供不同服务。<br>其中主要包括拓扑管理、转发管理、主机监测、交换机管理等模块。<br>服务抽象层SAL是控制器模块化的核心，自动适配底层不同的设备，使开发者专注于业务应用的开发。<br>SAL北向连接功能模块，以插件的形式为之提供底层设备服务。<br>南向连接多种协议插件，屏蔽不同协议的差异性，为北向功能模块提供一致性服务，SAL起到中间调度作用。</p>
+<p>南向接口支持多种不同协议，如openflow1.0、openflow1.3、BEG-LS等。底层支持混合模式交换机和经典openflow交换机。</p>
+<h2 id="ODL控制器设计原则"><a href="#ODL控制器设计原则" class="headerlink" title="ODL控制器设计原则"></a>ODL控制器设计原则</h2><p>ODL在设计的时候遵循了六个基本的架构原则<br>（以下来自OpenDaylight官方文档）：</p>
+<ol>
+<li>运行时模块化和扩展化（Runtime Modularity and Extensibility）：<br>支持在控制器运行时进行服务的安装、删除和更新。</li>
+<li>多协议的南向支持（Multiprotocol Southbound）：<br>南向支持多种协议。</li>
+<li>服务抽象层（Service Abstraction Layer）：<br>南向多种协议对上提供统一的北向服务接口。<br>Hydrogen中全线采用AD-SAL，Helium版本AD-SAL和MD-SAL共存，Lithium和Beryllium中已基本使用MD-SAL架构。</li>
+<li>开放的可扩展北向API（Open Extensible Northbound API）：<br>提供可扩展的应用API，通过REST或者函数调用方式。两者提供的功能要一致。</li>
+<li>支持多租户、切片（Support for Multitenancy/Slicing）：<br>允许网络在逻辑上（或物理上）划分成不同的切片或租户。<br>控制器的部分功能和模块可以管理指定切片。<br>控制器根据所管理的分片来呈现不同的控制观测面。</li>
+<li>一致性聚合（Consistent Clustering）：<br>提供细粒度复制的聚合和确保网络一致性的横向扩展（scale-out）。</li>
+</ol>
+<h2 id="ODL及BGP安装"><a href="#ODL及BGP安装" class="headerlink" title="ODL及BGP安装"></a>ODL及BGP安装</h2><ul>
+<li>首先下载安装包<br>下载地址为(推荐从官网下载):<br><a href="https://www.opendaylight.org/technical-community/getting-started-for-developers/downloads-and-documentation" target="_blank" rel="noopener">https://www.opendaylight.org/technical-community/getting-started-for-developers/downloads-and-documentation</a></li>
+<li>本文使用的ODL版本为Carbon SR2 October 16, 2017</li>
+<li>文件名为distribution-karaf-0.6.2-Carbon.zip</li>
+</ul>
+<h3 id="Windows系统下安装ODL"><a href="#Windows系统下安装ODL" class="headerlink" title="Windows系统下安装ODL"></a>Windows系统下安装ODL</h3><p>直接解压得到压缩文件里的内容如下</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/2.png" class="">
+
+<p>运行\bin目录下karaf.bat启动，等待进入控制台，</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/3.png" class="">
+
+<p>看到如下界面表示成功进入ODL控制台</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/4.png" class="">
+
+<h3 id="Linux系统下安装ODL"><a href="#Linux系统下安装ODL" class="headerlink" title="Linux系统下安装ODL"></a>Linux系统下安装ODL</h3><p>此处略去安装Linux系统过程<br>本文使用的Linux系统版本为：Ubuntu x64 16.10(虚拟机)</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/5.png" class="">
+
+<p>同样解压下载到的distribution-karaf-0.6.2-Carbon.zip</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/6.png" class="">
+
+<p>运行\bin目录下karaf启动，等待进入控制台</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/7.png" class="">
+
+<p>看到如下界面表示成功进入ODL控制台</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/8.png" class="">
+
+<h3 id="安装BGP"><a href="#安装BGP" class="headerlink" title="安装BGP"></a>安装BGP</h3><p>在ODL安装完毕之后，可以开始安装BGP<br>在ODL控制台输入命令feature:install odl-bgpcep-bgp 回车执行命令<br>成功执行并安装完毕，无回显</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/9.png" class="">
+
+<p>如不确定是否安装完成，可以执行命令feature:list -i 查询已安装的feature</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/10.png" class="">
+
+<h1 id="BGP-Border-Gateway-Protocol"><a href="#BGP-Border-Gateway-Protocol" class="headerlink" title="BGP (Border Gateway Protocol)"></a>BGP (Border Gateway Protocol)</h1><p>前文中我们已经安装了odl-bgpcep-bgp。<br>此命令将安装BGP（边界网关协议）建立连接所需的一切，<br>并将数据存储在RIB（路由信息库）中，并在网络拓扑总览中显示数据。</p>
+<p>BGP全称是Border Gateway Protocol, 对应中文是边界网关协议。<br>BGP是互联网上一个核心的去中心化自治路由协议。<br>它的地位是核心的（目前是最重要的，互联网上唯一使用的路由协议），它的目的是去中心化，以达到各个网络自治。</p>
+<h2 id="BGP架构-Architecture"><a href="#BGP架构-Architecture" class="headerlink" title="BGP架构(Architecture)"></a>BGP架构(Architecture)</h2><p>每个特性（feature）都代表了BGPCEP代码库中的一个模块。<br>下图则说明了这些功能是如何相关的。</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/11.png" class="">
+
+<h2 id="BGP概念-concepts-及数据结构"><a href="#BGP概念-concepts-及数据结构" class="headerlink" title="BGP概念(concepts)及数据结构"></a>BGP概念(concepts)及数据结构</h2><p>此模块包含RFC 4271，RFC 4760，RFC 4456，RFC 1997和RFC 4360中描述的基本BGP概念。所有的概念都在一个yang模型中描述：bgp-types.yang。<br>如下图所示（图为yang模型部分内容）<br>全文可查阅：<br><a href="https://git.opendaylight.org/gerrit/gitweb?p=bgpcep.git;a=blob;f=bgp/concepts/src/main/yang/bgp-types.yang;hb=refs/heads/stable/boron" target="_blank" rel="noopener">https://git.opendaylight.org/gerrit/gitweb?p=bgpcep.git;a=blob;f=bgp/concepts/src/main/yang/bgp-types.yang;hb=refs/heads/stable/boron</a></p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/12.png" class="">
+
+<p>除此之外，只有一个NextHopUtil类，它包含序列化和解析NextHop的方法。</p>
+<p>对于该yang模型和类，在ODL安装目录下可以找到对应的jar文件，<br>即system\org\opendaylight\bgpcep\concepts\0.7.2-Carbon\concepts-0.7.2-Carbon.jar文件</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/13.png" class="">
+
+<h2 id="BGP协议分析"><a href="#BGP协议分析" class="headerlink" title="BGP协议分析"></a>BGP协议分析</h2><p>BGP是应用层协议，其传输层使用TCP，默认端口号是179。<br>因为是应用层协议，可以认为它的连接是可靠的，并且不用考虑底层的工作，例如fragment，确认，重传等等。<br>BGP是唯一使用TCP作为传输层的路由协议，其他的路由协议可能都还到不了传输层。</p>
+<p>TCP连接的窗口是65K字节，也就是说TCP连接允许在没有确认包的情况下，连续发送65K的数据。<br>而其他的路由协议，例如EIGRP和OSPF的窗口只有一个数据包，<br>也就是说前一个数据包收到确认包之后，才会发送下一个数据包。<br>当网络规模巨大时，需要传输的数据也相应变大，这样效率是非常低的。<br>这也是它们不适合大规模网络的原因。</p>
+<p>而正是由于TCP可以可靠的传输大量数据，且互联网的路由信息是巨大的，<br>TCP被选为BGP的传输层协议，并且BGP适合大规模网络环境。</p>
+<h3 id="消息头格式（Message-Header-Format）"><a href="#消息头格式（Message-Header-Format）" class="headerlink" title="消息头格式（Message Header Format）"></a>消息头格式（Message Header Format）</h3><p>和大部分协议一样，BGP的数据由header和data组成。<br>Header有19个字节，所有的BGP数据的Header格式是一样的。</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/14.png" class="">
+
+<p>Marker有16个字节长，存储着同步信息和加密信息。<br>Length有2个字节，包含header在内的长度。<br>Type有1个字节，表示当前BGP数据的类型，具体有4类：</p>
+<ol>
+<li>Open（code 1）：TCP连接建立之后，BGP发送的第一个包。收到Open之后，BGP peer会发送一个Keepalive消息以确认Open。其他所有的消息都只会在Open消息确认之后，并且BGP连接已经建立之后发送。</li>
+<li>Update（code 2）：BGP连接后的首次Update会交换整个BGP route table，之后的Update只会发送变化了的路由信息。所以说BGP是动态的传输路由消息的变化。</li>
+<li>Notification（code 3）：出错时发送的消息，这个消息一旦发送，BGP连接将会中断。</li>
+<li>Keepalive（code 4）：没有data，只有header。用来保持BGP连接，通常是1/3的BGP session hold time。默认是60秒，如果hold time是0，不会发送Keepalive。</li>
+</ol>
+<h3 id="OPEN消息格式（OPEN-Message-Format）"><a href="#OPEN消息格式（OPEN-Message-Format）" class="headerlink" title="OPEN消息格式（OPEN Message Format）"></a>OPEN消息格式（OPEN Message Format）</h3><p>TCP连接建立后，建立连接的双方发送的第一条消息都是OPEN消息。<br>如果OPEN消息是可接受的，将发送确认OPEN消息的KEEPALIVE消息。</p>
+<p>除了固定大小的BGP头之外，OPEN消息还包含以下字段：</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/15.png" class="">
+
+<ul>
+<li>Version：BGP的版本号。对于BGPv4来说，其值为4。</li>
+<li>My Autonomous System：本地AS编号。通过比较两端的AS编号可以确定是EBGP连接还是IBGP连接。</li>
+<li>Hold Time：在建立对等体关系时两端要协商Hold time，并保持一致。如果两端所配置的Hold time时间不同，则BGP会选择较小的值作为协商的结果。如果在这个时间内未收到对端发来的Keepalive消息，则认为BGP连接中断。如果保持时间为0，则标识不发送Keepalive报文。</li>
+<li>BGP Identifier：BGP路由器的Router ID，以IP地址的形式表示，用来识别BGP路由器。</li>
+<li>Opt Parm Len（Optional Parameters Length）：可选参数的长度。如果为0则没有可选参数。</li>
+<li>Optional Parameters：是一个可选参数用于BGP验证或多协议扩展（Multiprotocol Extensions）等功能。每一个参数为一个&lt;参数类型，参数长度，参数值&gt;（Parameter Type-Parameter Length-Parameter Value）三元组。</li>
+</ul>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/16.png" class="">
+
+<ul>
+<li>Parameter Type 为一个字节长度，表示参数的类型。</li>
+<li>Parameter Length 为一个字节长度，表示参数内容（Parameter Value）的长度。</li>
+<li>Parameter Value 不定长字节，根据参数不同内容不同。</li>
+</ul>
+<h3 id="UPDATE消息格式（UPDATE-Message-Format）"><a href="#UPDATE消息格式（UPDATE-Message-Format）" class="headerlink" title="UPDATE消息格式（UPDATE Message Format）"></a>UPDATE消息格式（UPDATE Message Format）</h3><p>UPDATE消息用于在BGP对等体之间传送路由信息。包含以下字段：</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/17.png" class="">
+
+<ul>
+<li>Withdrawn Routes Length ：（2字节无符号整数） 不可达路由长度，表示Withdrawn Routes字段的数据长度。如果Withdrawn Routes Length字段数值为0，则表示Withdrawn Routes字段没有任何数据，在UPDATE消息中不会被显示。</li>
+<li>Withdrawn Routes ：（变长） 撤销路由。该字段包括一系列的IP地址前缀信息，以下图的格式来表示，比如&lt;19,198.18.160.0&gt;表示一个198.18.160.0 255.255.224.0的网络。</li>
+</ul>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/18.png" class="">
+
+<ul>
+<li>Path Attribute Length ：（2字节无符号整数） 路由属性长度，表示Path Attribute字段的数据长度。如果Path Attribute Length数值为0，则表示Path Attribute字段没有任何数据，在UPDATE消息中不会被显示。</li>
+</ul>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/19.png" class="">
+
+<ul>
+<li>Network Layer Reachability Information ：（变长） 网络可达信息。包括一系列的IP地址前缀。格式与撤消路由字段一样。</li>
+</ul>
+<h3 id="KEEPALIVE消息格式（KEEPALIVE-Message-Format）"><a href="#KEEPALIVE消息格式（KEEPALIVE-Message-Format）" class="headerlink" title="KEEPALIVE消息格式（KEEPALIVE Message Format）"></a>KEEPALIVE消息格式（KEEPALIVE Message Format）</h3><ul>
+<li>KEEPALIVE报文的组成只包括一个BGP数据报头。</li>
+<li>缺省情况下，发送KEEPALIVE的时间间隔为 60 秒，Hold Time是180秒。每次从邻居处接收到KEEPALIVE报文将重置Hold Time定时器，如果Hold Time定时器超时，就认为对等体Down掉。</li>
+</ul>
+<h3 id="NOTIFICATION消息格式（NOTIFICATION-Message-Format）"><a href="#NOTIFICATION消息格式（NOTIFICATION-Message-Format）" class="headerlink" title="NOTIFICATION消息格式（NOTIFICATION Message Format）"></a>NOTIFICATION消息格式（NOTIFICATION Message Format）</h3><ul>
+<li>Errorcode：错误码。1字节长的字段。每个不同的错误都使用唯一的代码表示，而每一个错误码都可以拥有一个或多个错误子码，但如果某些错误码并不存在错误子码的话，则该错误子码字段以全0表示。</li>
+<li>Errsubcode：错误子码。</li>
+</ul>
+<h2 id="BGP工作原理"><a href="#BGP工作原理" class="headerlink" title="BGP工作原理"></a>BGP工作原理</h2><p>下图为BGP内部处理流程的简要流程图</p>
+<img src="/2018/02/17/OpenDaylight-BGP-Introduction/20.png" class="">
+
+<p>BGP是一种路径矢量协议（Path vector protocol）的实现。<br>因此，它的工作原理也是基于路径矢量。</p>
+<p>首先说明一下，下面说的BGP route指的是BGP自己维护的路由信息，<br>区分于设备的主路由表，也就是我们平常看见的那个路由表。<br>BGP route是BGP协议传输的数据，并存储在BGP router的数据库中。<br>并非所有的BGP route都会写到主路由表。<br>每条BGP route都包含了目的网络，下一跳和完整的路径信息。<br>路径信息是由AS号组成，当BGP router收到了一条路由信息，如果里面的路径包含了自己的AS号，<br>那它就能判定这是一条自己曾经发出的路由信息，收到的这条路由信息会被丢弃。</p>
+<p>这里把每个BGP服务的实体叫做BGP router，而与BGP router连接的对端叫BGP peer。<br>每个BGP router在收到了peer传来的路由信息，会存储在自己的数据库，<br>前面说过，路由信息包含很多其他的信息，BGP router会根据自己本地的policy结合路由信息中的内容判断，<br>如果路由信息符合本地policy，BGP router会修改自己的主路由表。本地的policy可以有很多，<br>举个例子，如果BGP router收到两条路由信息，目的网络一样，但是路径不一样，<br>一个是AS1-&gt;AS3-&gt;AS5，另一个是AS1-&gt;AS2，如果没有其他的特殊policy，BGP router会选用AS1-&gt;AS2这条路由信息。<br>policy还有很多其他的，可以实现复杂的控制。</p>
+<p>除了修改主路由表，BGP router还会修改这条路由信息，将自己的AS号加在BGP数据中，<br>将下一跳改为自己，并且将自己加在路径信息里。<br>在这之后，这条消息会继续向别的BGP peer发送。<br>而其他的BGP peer就知道了，可以通过指定下一跳到当前BGP router，来达到目的网络地址。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>经过对BGP数据结构、消息格式、协议、工作原理的分析，<br>BGP更像是一个可达协议，可达信息传来传去，本地根据收到的信息判断决策，<br>对信息进行处理，再应用到路由表，最终发送给其他BGP结点。</p>
+<p>BGP协议在整个过程中都扮演着十分重要的角色，<br>贯穿着整个接收、决策、处理、发送的过程，起到了至关重要的作用。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>非常感谢以下列出的与未列出的各篇文章与资料，本文内容为学习了以下资料的产物<br>再次表示忠心的感谢</p>
+<p>本文中也引用了以下资料中的部分图片、文字等<br>【本文仅为学习目的，如有侵权，请联系我删除】</p>
+<ol>
+<li>官网：<a href="http://www.opendaylight.org" target="_blank" rel="noopener">http://www.opendaylight.org</a></li>
+<li>代码库：<a href="http://git.opendaylght.org" target="_blank" rel="noopener">http://git.opendaylght.org</a></li>
+<li>wiki:<a href="http://wiki.opendaylight.org" target="_blank" rel="noopener">http://wiki.opendaylight.org</a></li>
+<li>jira:<a href="http://jira.opendaylight.org" target="_blank" rel="noopener">http://jira.opendaylight.org</a></li>
+<li>FAQ:<a href="http://faq.opendaylight.org" target="_blank" rel="noopener">http://faq.opendaylight.org</a></li>
+<li><a href="http://docs.opendaylight.org/en/stable-carbon/getting-started-guide/installing_opendaylight.html" target="_blank" rel="noopener">installing_opendaylight</a></li>
+<li><a href="http://docs.opendaylight.org/en/stable-carbon/developer-guide/bgp-developer-guide.html" target="_blank" rel="noopener">BGP Developer Guide</a></li>
+<li><a href="http://docs.opendaylight.org/en/stable-carbon/user-guide/bgp-user-guide.html" target="_blank" rel="noopener">bgp-user-guide</a></li>
+<li><a href="http://docs.opendaylight.org/en/stable-carbon/user-guide/bgp-monitoring-protocol-user-guide.html" target="_blank" rel="noopener">bgp-monitoring-protocol-user-guide</a></li>
+<li><a href="https://www.serro.com/opendaylight-using-odl-bgp-advertising-routes-odl-rest-api-xml-files/" target="_blank" rel="noopener">Using ODL BGP and advertising routes ODL REST API and XML files</a></li>
+<li><a href="http://www.sdnlab.com" target="_blank" rel="noopener">http://www.sdnlab.com</a></li>
+<li><a href="https://www.sdnlab.com/20315.html" target="_blank" rel="noopener">人人都想了解的BGP，路由策略这样处理——肖宏辉</a></li>
+<li><a href="https://www.sdnlab.com/20293.html" target="_blank" rel="noopener">BGP漫谈——肖宏辉</a></li>
+<li><a href="https://www.sdnlab.com/16612.html" target="_blank" rel="noopener">OpenDaylight你不可不知的十大问题——OpenDaylight是什么？</a></li>
+</ol>
+<p>最后更新时间：2018年2月22日 13:30:55</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Simo Lin
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/" title="OpenDaylight BGP 简介(OpenDaylight BGP Introduction)">http://simolin.cn/2018/02/17/OpenDaylight-BGP-Introduction/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OpenDaylight/" rel="tag"># OpenDaylight</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/02/16/Clean-system-trash-script/" rel="prev" title="一键清理系统垃圾文件脚本(Clean system trash script)">
+      <i class="fa fa-chevron-left"></i> 一键清理系统垃圾文件脚本(Clean system trash script)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/16/Hexo-Usage/" rel="next" title="使用Hexo在Github上搭建Blog(Hexo Usage)">
+      使用Hexo在Github上搭建Blog(Hexo Usage) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDA4Ny8xMDYyNQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenDaylight（ODL）"><span class="nav-number">2.</span> <span class="nav-text">OpenDaylight（ODL）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ODL控制器"><span class="nav-number">2.1.</span> <span class="nav-text">ODL控制器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ODL控制器架构"><span class="nav-number">2.2.</span> <span class="nav-text">ODL控制器架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ODL控制器设计原则"><span class="nav-number">2.3.</span> <span class="nav-text">ODL控制器设计原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ODL及BGP安装"><span class="nav-number">2.4.</span> <span class="nav-text">ODL及BGP安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Windows系统下安装ODL"><span class="nav-number">2.4.1.</span> <span class="nav-text">Windows系统下安装ODL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux系统下安装ODL"><span class="nav-number">2.4.2.</span> <span class="nav-text">Linux系统下安装ODL</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装BGP"><span class="nav-number">2.4.3.</span> <span class="nav-text">安装BGP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BGP-Border-Gateway-Protocol"><span class="nav-number">3.</span> <span class="nav-text">BGP (Border Gateway Protocol)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#BGP架构-Architecture"><span class="nav-number">3.1.</span> <span class="nav-text">BGP架构(Architecture)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BGP概念-concepts-及数据结构"><span class="nav-number">3.2.</span> <span class="nav-text">BGP概念(concepts)及数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BGP协议分析"><span class="nav-number">3.3.</span> <span class="nav-text">BGP协议分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#消息头格式（Message-Header-Format）"><span class="nav-number">3.3.1.</span> <span class="nav-text">消息头格式（Message Header Format）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OPEN消息格式（OPEN-Message-Format）"><span class="nav-number">3.3.2.</span> <span class="nav-text">OPEN消息格式（OPEN Message Format）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UPDATE消息格式（UPDATE-Message-Format）"><span class="nav-number">3.3.3.</span> <span class="nav-text">UPDATE消息格式（UPDATE Message Format）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KEEPALIVE消息格式（KEEPALIVE-Message-Format）"><span class="nav-number">3.3.4.</span> <span class="nav-text">KEEPALIVE消息格式（KEEPALIVE Message Format）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#NOTIFICATION消息格式（NOTIFICATION-Message-Format）"><span class="nav-number">3.3.5.</span> <span class="nav-text">NOTIFICATION消息格式（NOTIFICATION Message Format）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BGP工作原理"><span class="nav-number">3.4.</span> <span class="nav-text">BGP工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Simo Lin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Simo Lin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/simolin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;simolin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Simo Lin</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"2fwF7Lp1Rnm8L6hGlqFArPLG-gzGzoHsz","app_key":"pREEdhA82ajw2RJSwHwJI8WI","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

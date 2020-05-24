@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"simolin.cn","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="昨日，一朋友拜托我看一份Python（Pygame）代码（似乎是实验还是课设？）然后帮忙修改一下，增加点小功能下载后发现是基于Pygame的SnakeGame，也就是贪吃蛇游戏代码不长，难度也不是很高（主要是我对Pygame不熟悉）临时学习了Pygame之后倒也成功修改了代码，下文详讲对代码的分析和修改过程 PS：感兴趣可以下载，琢磨琢磨（发现还是挺有趣的）修改前、后 源代码(点击下载) 【本文仅">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification)">
+<meta property="og:url" content="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/index.html">
+<meta property="og:site_name" content="Simo Lin&#39;s blog">
+<meta property="og:description" content="昨日，一朋友拜托我看一份Python（Pygame）代码（似乎是实验还是课设？）然后帮忙修改一下，增加点小功能下载后发现是基于Pygame的SnakeGame，也就是贪吃蛇游戏代码不长，难度也不是很高（主要是我对Pygame不熟悉）临时学习了Pygame之后倒也成功修改了代码，下文详讲对代码的分析和修改过程 PS：感兴趣可以下载，琢磨琢磨（发现还是挺有趣的）修改前、后 源代码(点击下载) 【本文仅">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/3.png">
+<meta property="article:published_time" content="2017-06-07T12:12:57.000Z">
+<meta property="article:modified_time" content="2020-05-24T01:56:24.800Z">
+<meta property="article:author" content="Simo Lin">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/1.png">
+
+<link rel="canonical" href="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification) | Simo Lin's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Simo Lin's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Simo Lin's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-favorite">
+
+    <a href="/favorite/" rel="section"><i class="fa fa-fw fa-star"></i>favorite</a>
+
+  </li>
+        <li class="menu-item menu-item-comments">
+
+    <a href="/comments/" rel="section"><i class="fa fa-fw fa-comments"></i>comments</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Simo Lin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simo Lin's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-06-07 20:12:57" itemprop="dateCreated datePublished" datetime="2017-06-07T20:12:57+08:00">2017-06-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-24 09:56:24" itemprop="dateModified" datetime="2020-05-24T09:56:24+08:00">2020-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/06/07/Python-Pygame-SnakeGame-CodeModification/" class="post-meta-item leancloud_visitors" data-flag-title="Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification)" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>昨日，一朋友拜托我看一份Python（Pygame）代码（似乎是实验还是课设？）<br>然后帮忙修改一下，增加点小功能<br>下载后发现是基于Pygame的SnakeGame，也就是贪吃蛇游戏<br>代码不长，难度也不是很高（主要是我对Pygame不熟悉）<br>临时学习了Pygame之后倒也成功修改了代码，下文详讲对代码的分析和修改过程</p>
+<p>PS：感兴趣可以下载，琢磨琢磨（发现还是挺有趣的）<br><a href="http://pan.baidu.com/s/1gfwySO7" target="_blank" rel="noopener">修改前、后 源代码(点击下载)</a></p>
+<p>【本文仅为学习目的，如有侵权，请联系我删除】</p>
+<a id="more"></a>
+
+<h1 id="先解压查看文件"><a href="#先解压查看文件" class="headerlink" title="先解压查看文件"></a>先解压查看文件</h1><p>（这里为修改后的文件夹截图，方便对比）如下</p>
+<img src="/2017/06/07/Python-Pygame-SnakeGame-CodeModification/1.png" class="" title="文件列表">
+<p>其中</p>
+<table>
+<thead>
+<tr>
+<th>文件名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>修改前</td>
+<td></td>
+</tr>
+<tr>
+<td>1-16.png</td>
+<td>为原程序自带的图案（用于贪吃蛇Snake本身和需要吃的食物Food）</td>
+</tr>
+<tr>
+<td>BGM.ogg</td>
+<td>为原程序自带的背景音乐</td>
+</tr>
+<tr>
+<td>face.png</td>
+<td>为原程序自带的开始背景图案</td>
+</tr>
+<tr>
+<td>face.psd</td>
+<td>为face.png的PS原工程文件</td>
+</tr>
+<tr>
+<td>MyLibrary.py</td>
+<td>为主程序掉调用的自定义lib库代码</td>
+</tr>
+<tr>
+<td>SnakeGame.py</td>
+<td>为主程序代码（因此只修改此文件即可）</td>
+</tr>
+<tr>
+<td>修改后</td>
+<td></td>
+</tr>
+<tr>
+<td>17.png</td>
+<td>为修改后新增的障碍物图案</td>
+</tr>
+<tr>
+<td>SnakeGame.py</td>
+<td>修改后的主程序代码</td>
+</tr>
+</tbody></table>
+<h1 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h1><p>注：<br>这里只挑比较重要的部分代码（需要修改的、有关的）做分析<br>需要全部源代码请从上面的链接下载</p>
+<h2 id="MyLibrary-py"><a href="#MyLibrary-py" class="headerlink" title="MyLibrary.py"></a>MyLibrary.py</h2><p>基于pygame.sprite.Sprite类，自定义了MySprite和Point类<br>初始化、定义了一些需要使用的参数和函数</p>
+<p>注：<br>在pygame.sprite模块里面包含了一个名为Sprite类，是pygame本身自带的一个精灵类<br>Sprite类可以实现加载动态图片（精灵序列图）、更新帧、绘制帧、精灵组等功能<br>但是这个类的功能比较少，因此MyLibrary.py中新建了MySprite类对其继承<br>在sprite类的基础上丰富功能，以供SnakeGame.py调用</p>
+<figure class="highlight python"><figcaption><span>MyLibrary.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MySprite class extends pygame.sprite.Sprite</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MySprite</span><span class="params">(pygame.sprite.Sprite)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        pygame.sprite.Sprite.__init__(self) <span class="comment">#extend the base Sprite class</span></span><br><span class="line">        self.master_image = <span class="literal">None</span></span><br><span class="line">        self.frame = <span class="number">0</span></span><br><span class="line">        self.old_frame = <span class="number">-1</span></span><br><span class="line">        self.frame_width = <span class="number">1</span></span><br><span class="line">        self.frame_height = <span class="number">1</span></span><br><span class="line">        self.first_frame = <span class="number">0</span></span><br><span class="line">        self.last_frame = <span class="number">0</span></span><br><span class="line">        self.columns = <span class="number">1</span></span><br><span class="line">        self.last_time = <span class="number">0</span></span><br><span class="line">        self.direction = <span class="number">0</span></span><br><span class="line">        self.velocity = Point(<span class="number">0.0</span>,<span class="number">0.0</span>) </span><br><span class="line">    ……</span><br><span class="line"><span class="comment">#Point class</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, x, y)</span>:</span></span><br><span class="line">        self.__x = x</span><br><span class="line">        self.__y = y</span><br><span class="line">    ……</span><br></pre></td></tr></table></figure>
+
+<h2 id="SnakeGame-py"><a href="#SnakeGame-py" class="headerlink" title="SnakeGame.py"></a>SnakeGame.py</h2><p>注：食物Food和贪吃蛇Snake在游戏中的图片为1-16.png中的随机一张或多张组成</p>
+<h3 id="Food类"><a href="#Food类" class="headerlink" title="Food类"></a>Food类</h3><p>即随机在地图上出现的可以由贪吃蛇Snake吃掉（增加身体长度）的食物</p>
+<figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Food</span><span class="params">(MySprite)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> img_size,food_image      <span class="comment">#全局变量</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span>             <span class="comment">#初始化</span></span><br><span class="line">        MySprite.__init__(self)		</span><br><span class="line">        image = create_pic()        <span class="comment">#随机获取图像（每个食物在地图上显示为一张图片）</span></span><br><span class="line">        self.set_image(image)       <span class="comment">#设置食物图像</span></span><br><span class="line">        MySprite.update(self, <span class="number">0</span>, <span class="number">30</span>)</span><br><span class="line">        self.X = random.randint(<span class="number">0</span>,<span class="number">23</span>) * img_size  <span class="comment">#随机Food食物的X坐标</span></span><br><span class="line">        self.Y = random.randint(<span class="number">0</span>,<span class="number">17</span>) * img_size  <span class="comment">#随机Food食物的Y坐标</span></span><br></pre></td></tr></table></figure>
+<p>注：<br>默认地图大小长为23，宽为17，所以随机数值区间与此挂钩<br>因为从点“映射”到图像有缩放的比例，即img_size，所以随机出来的数值还需要 * img_size</p>
+<h3 id="SnakeSegment类"><a href="#SnakeSegment类" class="headerlink" title="SnakeSegment类"></a>SnakeSegment类</h3><p>每一节贪吃蛇Snake身体的类</p>
+<figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SnakeSegment</span><span class="params">(MySprite)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> img_size,food_image      <span class="comment">#全局变量</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span>             <span class="comment">#初始化</span></span><br><span class="line">        MySprite.__init__(self)</span><br><span class="line">        image= create_pic()         <span class="comment">#随机获取图像（每节蛇身在地图上显示为一张图片）</span></span><br><span class="line">        self.set_image(image)       <span class="comment">#设置蛇身图像</span></span><br><span class="line">        MySprite.update(self, <span class="number">0</span>, <span class="number">30</span>) </span><br></pre></td></tr></table></figure>
+<p>注：<br>整条贪吃蛇Snake是由一节一节的蛇身组成的，每一节蛇身和食物一样都是一张图片<br>所以Food类和SnakeSegment类定义大部分类似，并且使用的都是同一组图片1-16.png.</p>
+<h3 id="Snake类"><a href="#Snake类" class="headerlink" title="Snake类"></a>Snake类</h3><p>贪吃蛇Snake类，初始化为3节蛇身，初始化坐标为（10，9），初始方向向左</p>
+<figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Snake</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> img_size,food_image</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.velocity = Point(<span class="number">-1</span>,<span class="number">0</span>)      <span class="comment">#初始化贪吃蛇方向</span></span><br><span class="line">        self.old_time = <span class="number">0</span></span><br><span class="line">        head = SnakeSegment()            <span class="comment">#初始化一节蛇身</span></span><br><span class="line">        head.X = <span class="number">10</span>*img_size             <span class="comment">#初始化位置X坐标</span></span><br><span class="line">        head.Y = <span class="number">9</span>*img_size              <span class="comment">#初始化位置Y坐标</span></span><br><span class="line">        self.segments = list()           <span class="comment">#初始化蛇身列表</span></span><br><span class="line">        self.segments.append(head)       <span class="comment">#将已经初始化的第一节蛇身加入列表</span></span><br><span class="line">        self.add_segment()               <span class="comment">#再增加一节蛇身</span></span><br><span class="line">        self.add_segment()               <span class="comment">#再增加一节蛇身</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">update</span><span class="params">(self,ticks)</span>:</span></span><br><span class="line">        <span class="keyword">global</span> step_time </span><br><span class="line">        <span class="keyword">if</span> ticks &gt; self.old_time + step_time:                <span class="comment">#根据step_time调整蛇移动速度</span></span><br><span class="line">            self.old_time = ticks</span><br><span class="line">                                                             <span class="comment">#移动蛇的身体部分</span></span><br><span class="line">            <span class="keyword">for</span> n <span class="keyword">in</span> range(len(self.segments)<span class="number">-1</span>, <span class="number">0</span>, <span class="number">-1</span>):</span><br><span class="line">                self.segments[n].X = self.segments[n<span class="number">-1</span>].X</span><br><span class="line">                self.segments[n].Y = self.segments[n<span class="number">-1</span>].Y</span><br><span class="line">                                                             <span class="comment">#移动蛇头</span></span><br><span class="line">            self.segments[<span class="number">0</span>].X += self.velocity.x * img_size</span><br><span class="line">            self.segments[<span class="number">0</span>].Y += self.velocity.y * img_size</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">draw</span><span class="params">(self,surface)</span>:</span>                                  <span class="comment">#根据蛇身在地图上绘制出图像</span></span><br><span class="line">        <span class="keyword">for</span> segment <span class="keyword">in</span> self.segments: </span><br><span class="line">            surface.blit(segment.image, (segment.X, segment.Y))</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_segment</span><span class="params">(self)</span>:</span>                                   <span class="comment">#增加一节蛇身</span></span><br><span class="line">        last = len(self.segments)<span class="number">-1</span></span><br><span class="line">        segment = SnakeSegment()</span><br><span class="line">        start = Point(<span class="number">0</span>,<span class="number">0</span>)</span><br><span class="line">        <span class="keyword">if</span> self.velocity.x &lt; <span class="number">0</span>: start.x = img_size</span><br><span class="line">        <span class="keyword">elif</span> self.velocity.x &gt; <span class="number">0</span>: start.x = -img_size</span><br><span class="line">        <span class="keyword">if</span> self.velocity.y &lt; <span class="number">0</span>: start.y = img_size</span><br><span class="line">        <span class="keyword">elif</span> self.velocity.y &gt; <span class="number">0</span>: start.y = -img_size</span><br><span class="line">        segment.X = self.segments[last].X + start.x</span><br><span class="line">        segment.Y = self.segments[last].Y + start.y</span><br><span class="line">        self.segments.append(segment)</span><br></pre></td></tr></table></figure>
+
+<h3 id="初始化函数game-init"><a href="#初始化函数game-init" class="headerlink" title="初始化函数game_init()"></a>初始化函数game_init()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#游戏初始化</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">game_init</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> screen, backbuffer, font, timer, snake, food_group, img_size, img_group<span class="comment">#全局变量</span></span><br><span class="line">    font = pygame.font.Font(<span class="literal">None</span>, <span class="number">30</span>)</span><br><span class="line">    timer = pygame.time.Clock()</span><br><span class="line"></span><br><span class="line">    <span class="comment">#使用备份缓存机制，减少资源的消耗</span></span><br><span class="line">    backbuffer = pygame.Surface((screen.get_rect().width,screen.get_rect().height))</span><br><span class="line"></span><br><span class="line">    <span class="comment">#创建蛇体</span></span><br><span class="line">    snake = Snake()</span><br><span class="line"></span><br><span class="line">    <span class="comment">#创建食物对象</span></span><br><span class="line">    food_group = pygame.sprite.Group()</span><br><span class="line">    food = Food()                    <span class="comment">#使用Food()类创建food对象（即在地图上随机产生一个食物）</span></span><br><span class="line">    food_group.add(food)             <span class="comment">#创建食物food组（即可以同时存在多个食物）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="加载图片函数load-pic"><a href="#加载图片函数load-pic" class="headerlink" title="加载图片函数load_pic()"></a>加载图片函数load_pic()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建备用图片列表</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_pic</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>,<span class="number">17</span>):                <span class="comment">#循环读取1-17.png</span></span><br><span class="line">        string = str(i)+<span class="string">".png"</span></span><br><span class="line">        img = pygame.image.load(string).convert_alpha()</span><br><span class="line">        width,height = img.get_size()    <span class="comment">#获取大小</span></span><br><span class="line">        img = pygame.transform.smoothscale(img,(width//<span class="number">7</span>*<span class="number">5</span>,height//<span class="number">7</span>*<span class="number">5</span>))  <span class="comment">#缩放</span></span><br><span class="line">        img_group.append(img)            <span class="comment">#加入图片组，方便调用</span></span><br><span class="line">        string = <span class="string">""</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="随机返回图片函数create-pic"><a href="#随机返回图片函数create-pic" class="headerlink" title="随机返回图片函数create_pic()"></a>随机返回图片函数create_pic()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建随机头像</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_pic</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> img_group              <span class="comment">#全局变量，即图片组</span></span><br><span class="line">    index = random.randint(<span class="number">0</span>,<span class="number">15</span>)  <span class="comment">#产生随机数，作为图片组下标</span></span><br><span class="line">    image = img_group[index]</span><br><span class="line">    <span class="keyword">return</span> image                  <span class="comment">#随机返回图片组中的一张照片</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="加载音频函数audio-init"><a href="#加载音频函数audio-init" class="headerlink" title="加载音频函数audio_init()"></a>加载音频函数audio_init()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#初始化音频功能</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">audio_init</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> bgm</span><br><span class="line">    <span class="comment">#初识pygame中的音频模块，程序中只需加载一次</span></span><br><span class="line">    pygame.mixer.init() </span><br><span class="line">    <span class="comment">#加载音频文件</span></span><br><span class="line">    bgm = pygame.mixer.Sound(<span class="string">"bgm.ogg"</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="播放声音函数play-sound"><a href="#播放声音函数play-sound" class="headerlink" title="播放声音函数play_sound()"></a>播放声音函数play_sound()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#定义播放声音函数</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">play_sound</span><span class="params">(sound)</span>:</span></span><br><span class="line">    channel = pygame.mixer.find_channel(<span class="literal">True</span>)</span><br><span class="line">    channel.set_volume(<span class="number">0.5</span>)</span><br><span class="line">    channel.play(sound)</span><br></pre></td></tr></table></figure>
+
+<h3 id="主程序"><a href="#主程序" class="headerlink" title="主程序"></a>主程序</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#主程序开始   </span></span><br><span class="line">pygame.init()               </span><br><span class="line">img_size =<span class="number">40</span>                <span class="comment">#默认图片大小</span></span><br><span class="line">img_group = list()          <span class="comment">#初始化图片组</span></span><br><span class="line">screen_size = <span class="number">0</span>             <span class="comment">#pygame.FULLSCREEN 是否全屏</span></span><br><span class="line">screen = pygame.display.set_mode((<span class="number">24</span> * img_size,<span class="number">18</span> * img_size), screen_size)  <span class="comment">#设置屏幕选项</span></span><br><span class="line">pygame.display.set_caption(<span class="string">"嗷大喵贪吃蛇"</span>)    <span class="comment">#窗口标题</span></span><br><span class="line">face = pygame.image.load(<span class="string">"face.png"</span>)          <span class="comment">#游戏开始界面</span></span><br><span class="line">load_pic()                                    <span class="comment">#加载图片</span></span><br><span class="line">game_init()                                   <span class="comment">#初始化游戏</span></span><br><span class="line">game_over = <span class="literal">False</span>                             <span class="comment">#变量，记录游戏是否结束</span></span><br><span class="line">last_time = <span class="number">0</span></span><br><span class="line">bgm = <span class="literal">None</span></span><br><span class="line">auto_play = <span class="literal">False</span></span><br><span class="line">step_time = <span class="number">400</span></span><br><span class="line">waiting =<span class="literal">True</span></span><br><span class="line">audio_init()                                  <span class="comment">#加载音频</span></span><br><span class="line">rePlay = <span class="literal">True</span></span><br><span class="line">play_sound(bgm)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    timer.tick(<span class="number">30</span>)</span><br><span class="line">    ticks = pygame.time.get_ticks()</span><br><span class="line">    current_time = time.clock()</span><br><span class="line">    <span class="keyword">for</span> event <span class="keyword">in</span> pygame.event.get():</span><br><span class="line">        <span class="keyword">if</span> event.type == QUIT:</span><br><span class="line">            pygame.quit()</span><br><span class="line">            sys.exit()</span><br><span class="line">        <span class="keyword">elif</span> event.type == MOUSEBUTTONUP:</span><br><span class="line">            <span class="keyword">if</span> waiting == <span class="literal">True</span>:</span><br><span class="line">                waiting = <span class="literal">False</span></span><br><span class="line">                game_over = <span class="literal">False</span></span><br><span class="line">                last_time = <span class="number">0</span></span><br><span class="line">                auto_play = <span class="literal">False</span> </span><br><span class="line">                step_time = <span class="number">400</span></span><br><span class="line">                game_init()</span><br><span class="line">    keys = pygame.key.get_pressed()</span><br><span class="line">    <span class="keyword">if</span> keys[K_ESCAPE]:                         <span class="comment">#按ESC键退出</span></span><br><span class="line">        pygame.quit()</span><br><span class="line">        sys.exit()</span><br><span class="line">    <span class="keyword">elif</span> keys[K_UP] <span class="keyword">or</span> keys[K_w]:              <span class="comment">#按上或W使贪吃蛇的方向为上</span></span><br><span class="line">        snake.velocity = Point(<span class="number">0</span>,<span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">elif</span> keys[K_DOWN] <span class="keyword">or</span> keys[K_s]:            <span class="comment">#按下或S使贪吃蛇的方向为下</span></span><br><span class="line">        snake.velocity = Point(<span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">elif</span> keys[K_LEFT] <span class="keyword">or</span> keys[K_a]:            <span class="comment">#按左或A使贪吃蛇的方向为左</span></span><br><span class="line">        snake.velocity = Point(<span class="number">-1</span>,<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">elif</span> keys[K_RIGHT] <span class="keyword">or</span> keys[K_d]:           <span class="comment">#按右或D使贪吃蛇的方向为右</span></span><br><span class="line">        snake.velocity = Point(<span class="number">1</span>,<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">elif</span> keys[K_f]:                            <span class="comment">#按F切换全屏</span></span><br><span class="line">        <span class="keyword">if</span> screen_size == pygame.FULLSCREEN:</span><br><span class="line">            screen_size = <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            screen_size =pygame.FULLSCREEN</span><br><span class="line">        screen = pygame.display.set_mode((<span class="number">24</span>*img_size,<span class="number">18</span>*img_size),screen_size)</span><br><span class="line">        pygame.display.set_caption(<span class="string">"嗷大喵贪吃蛇"</span>)</span><br><span class="line">    <span class="keyword">elif</span> keys[K_PLUS] <span class="keyword">or</span> keys[K_KP_PLUS]:      <span class="comment">#按+加快游戏速度</span></span><br><span class="line">        step_time -= <span class="number">10</span></span><br><span class="line">        <span class="keyword">if</span> step_time &lt;<span class="number">50</span>:</span><br><span class="line">            step_time=<span class="number">50</span></span><br><span class="line">    <span class="keyword">elif</span> keys[K_MINUS] <span class="keyword">or</span> keys[K_KP_MINUS]:    <span class="comment">#按-减慢游戏速度</span></span><br><span class="line">        step_time += <span class="number">10</span></span><br><span class="line">        <span class="keyword">if</span> step_time &gt;<span class="number">400</span>:</span><br><span class="line">            step_time = <span class="number">400</span></span><br><span class="line">    <span class="keyword">elif</span> keys[K_SPACE]:                        <span class="comment">#按空格键自动寻路</span></span><br><span class="line">        <span class="keyword">if</span> auto_play:</span><br><span class="line">            auto_play = <span class="literal">False</span></span><br><span class="line">            step_time = <span class="number">400</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            auto_play = <span class="literal">True</span></span><br><span class="line">            step_time = <span class="number">100</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> waiting:</span><br><span class="line">        screen.blit(face,(<span class="number">0</span>,<span class="number">0</span>))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> game_over:</span><br><span class="line">            snake.update(ticks)</span><br><span class="line">            food_group.update(ticks)</span><br><span class="line">            </span><br><span class="line">            <span class="comment">#检测是否捡起食物，并增加身体长度</span></span><br><span class="line">            hit_list = pygame.sprite.groupcollide(snake.segments, \</span><br><span class="line">                food_group, <span class="literal">False</span>, <span class="literal">True</span>)</span><br><span class="line">            <span class="keyword">if</span> len(hit_list) &gt; <span class="number">0</span>:</span><br><span class="line">                food_group.add(Food())</span><br><span class="line">                snake.add_segment()</span><br><span class="line"></span><br><span class="line">            <span class="comment">#检测是否碰到了自己的身体</span></span><br><span class="line">            <span class="keyword">for</span> n <span class="keyword">in</span> range(<span class="number">1</span>, len(snake.segments)):</span><br><span class="line">                <span class="keyword">if</span> pygame.sprite.collide_rect(snake.segments[<span class="number">0</span>], snake.segments[n]):</span><br><span class="line">                    game_over = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">#检查屏幕边界</span></span><br><span class="line">            head_x = snake.segments[<span class="number">0</span>].X//img_size</span><br><span class="line">            head_y = snake.segments[<span class="number">0</span>].Y//img_size</span><br><span class="line">            <span class="keyword">if</span> head_x &lt; <span class="number">0</span> <span class="keyword">or</span> head_x &gt; <span class="number">24</span> <span class="keyword">or</span> head_y &lt; <span class="number">0</span> <span class="keyword">or</span> head_y &gt; <span class="number">18</span>:</span><br><span class="line">                game_over = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">#执行自动寻路代码</span></span><br><span class="line">            <span class="keyword">if</span> auto_play: auto_move()</span><br><span class="line">        </span><br><span class="line">        backbuffer.fill((<span class="number">20</span>,<span class="number">50</span>,<span class="number">20</span>)) </span><br><span class="line">        snake.draw(backbuffer)</span><br><span class="line">        food_group.draw(backbuffer)</span><br><span class="line">        screen.blit(backbuffer, (<span class="number">0</span>,<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line">        <span class="comment">#左上角输出当前贪吃蛇长度和位置</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> game_over:</span><br><span class="line">            print_text(font, <span class="number">0</span>, <span class="number">0</span>, <span class="string">"Length "</span> + str(len(snake.segments)))</span><br><span class="line">            print_text(font, <span class="number">0</span>, <span class="number">20</span>, <span class="string">"Position "</span> + str(snake.segments[<span class="number">0</span>].X//img_size) + \</span><br><span class="line">                       <span class="string">","</span> + str(snake.segments[<span class="number">0</span>].Y//img_size))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print_text(font, <span class="number">0</span>, <span class="number">0</span>, <span class="string">"GAME OVER"</span>)</span><br><span class="line">            waiting = <span class="literal">True</span></span><br><span class="line">            game_over = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">#显示自动寻路字样</span></span><br><span class="line">        <span class="keyword">if</span> auto_play: </span><br><span class="line">            print_text(font, <span class="number">600</span>, <span class="number">0</span>, <span class="string">"AUTO"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment">#循环播放背景音乐 </span></span><br><span class="line">        <span class="keyword">if</span> int(current_time)%<span class="number">200</span> ==<span class="number">0</span> <span class="keyword">and</span> rePlay:</span><br><span class="line">            play_sound(bgm)</span><br><span class="line">            rePlay = <span class="literal">False</span></span><br><span class="line">        <span class="keyword">if</span> int(current_time)%<span class="number">200</span> == <span class="number">1</span>:</span><br><span class="line">            rePlay = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    pygame.display.update() </span><br></pre></td></tr></table></figure>
+
+<h1 id="修改代码"><a href="#修改代码" class="headerlink" title="修改代码"></a>修改代码</h1><h2 id="SnakeGame-py-1"><a href="#SnakeGame-py-1" class="headerlink" title="SnakeGame.py"></a>SnakeGame.py</h2><p>以上即为整个程序的整个流程，看完了这些也就理解了整个程序的调用关系<br>很明显，要加入的障碍物Wall类，本质上和食物Food类/蛇身SnakeSegment类是一样的<br>只要稍微修改Food类的代码，即可作为Wall类使用，给程序加入障碍物，代码如下</p>
+<h3 id="增加-Wall类"><a href="#增加-Wall类" class="headerlink" title="增加 Wall类"></a>增加 Wall类</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Wall</span><span class="params">(MySprite)</span>:</span></span><br><span class="line">    <span class="keyword">global</span> img_size                 <span class="comment">#全局变量</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span>             <span class="comment">#初始化</span></span><br><span class="line">        MySprite.__init__(self)</span><br><span class="line">        image = create_wall_pic()   <span class="comment">#获取墙图像</span></span><br><span class="line">        self.set_image(image)       <span class="comment">#设置墙图像</span></span><br><span class="line">        MySprite.update(self, <span class="number">0</span>, <span class="number">30</span>)</span><br><span class="line">        self.X = random.randint(<span class="number">0</span>, <span class="number">23</span>) * img_size  <span class="comment">#随机Wall墙的X坐标</span></span><br><span class="line">        self.Y = random.randint(<span class="number">0</span>, <span class="number">17</span>) * img_size  <span class="comment">#随机Wall墙的Y坐标</span></span><br></pre></td></tr></table></figure>
+<p>注:这么做有几个缺点:</p>
+<ul>
+<li>墙是随机的,不能控制位置</li>
+<li>墙有可能和食物的位置一样,即游戏无法进行(如果同时只有一个食物的话)</li>
+</ul>
+<h3 id="增加-create-wall-pic"><a href="#增加-create-wall-pic" class="headerlink" title="增加 create_wall_pic()"></a>增加 create_wall_pic()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建墙头像</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_wall_pic</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> img_group</span><br><span class="line">    index = <span class="number">16</span></span><br><span class="line">    image = img_group[index]        <span class="comment">#返回墙图片</span></span><br><span class="line">    <span class="keyword">return</span> image</span><br></pre></td></tr></table></figure>
+
+<h3 id="增加代码-在game-init-中-初始化墙"><a href="#增加代码-在game-init-中-初始化墙" class="headerlink" title="增加代码 在game_init()中 初始化墙"></a>增加代码 在game_init()中 初始化墙</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建墙对象</span></span><br><span class="line">wall_group = pygame.sprite.Group()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, wall_num + <span class="number">1</span>):    <span class="comment">#wall_num为全局变量,代表墙的数量</span></span><br><span class="line">    wall = Wall()                   <span class="comment">#初始化一堵墙</span></span><br><span class="line">    wall_group.add(wall)            <span class="comment">#使用墙组wall_group来同时保存多个墙</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="增加代码-在主程序中-判断是否撞到墙"><a href="#增加代码-在主程序中-判断是否撞到墙" class="headerlink" title="增加代码 在主程序中 判断是否撞到墙"></a>增加代码 在主程序中 判断是否撞到墙</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">#检测是否撞到墙，并结束游戏</span></span><br><span class="line">hit_list = pygame.sprite.groupcollide(snake.segments, wall_group, <span class="literal">False</span>, <span class="literal">True</span>)</span><br><span class="line"><span class="keyword">if</span> len(hit_list) &gt; <span class="number">0</span>:</span><br><span class="line">    game_over = <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="增加代码-在主程序对应位置-刷新墙"><a href="#增加代码-在主程序对应位置-刷新墙" class="headerlink" title="增加代码 在主程序对应位置 刷新墙"></a>增加代码 在主程序对应位置 刷新墙</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">……</span><br><span class="line">wall_group.update(ticks)</span><br><span class="line">……</span><br><span class="line">wall_group.draw(backbuffer)</span><br><span class="line">……</span><br></pre></td></tr></table></figure>
+
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><h2 id="修改前"><a href="#修改前" class="headerlink" title="修改前"></a>修改前</h2><img src="/2017/06/07/Python-Pygame-SnakeGame-CodeModification/2.png" class="">
+<h2 id="修改后"><a href="#修改后" class="headerlink" title="修改后"></a>修改后</h2><img src="/2017/06/07/Python-Pygame-SnakeGame-CodeModification/3.png" class="">
+<p>可以看到墙已经在游戏中正常显示，游戏中也能正常的撞墙导致游戏结束<br>所以到此对该游戏的修改也就结束了………………吗？</p>
+<p>不不不，因为我发现代码中还有一些有趣的地方</p>
+<h1 id="有趣的东西"><a href="#有趣的东西" class="headerlink" title="有趣的东西"></a>有趣的东西</h1><h2 id="自动寻路？"><a href="#自动寻路？" class="headerlink" title="自动寻路？"></a>自动寻路？</h2><p>发现游戏中还有一个“特别”的函数，可以在游戏中按空格Space键让蛇自动寻路（吃食物）<br>在原版游戏中亲测大部分情况下可以自动寻路（蛇方向和食物方向相反时不可以，原因见下）</p>
+<h3 id="简单自动寻路函数auto-move"><a href="#简单自动寻路函数auto-move" class="headerlink" title="简单自动寻路函数auto_move()"></a>简单自动寻路函数auto_move()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#简单自动寻路代码</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">auto_move</span><span class="params">()</span>:</span></span><br><span class="line">    direction = get_current_direction() <span class="comment">#获取当前蛇方向</span></span><br><span class="line">    food_dir = get_food_direction()     <span class="comment">#获取当前食物方向</span></span><br><span class="line">    <span class="keyword">if</span> food_dir == <span class="string">"left"</span>:              <span class="comment">#根据蛇方向和食物方向改变蛇的方向</span></span><br><span class="line">        <span class="keyword">if</span> direction != <span class="string">"right"</span>:</span><br><span class="line">            direction = <span class="string">"left"</span></span><br><span class="line">    <span class="keyword">elif</span> food_dir == <span class="string">"right"</span>:</span><br><span class="line">        <span class="keyword">if</span> direction != <span class="string">"left"</span>:</span><br><span class="line">            direction = <span class="string">"right"</span></span><br><span class="line">    <span class="keyword">elif</span> food_dir == <span class="string">"up"</span>:</span><br><span class="line">        <span class="keyword">if</span> direction != <span class="string">"down"</span>:</span><br><span class="line">            direction = <span class="string">"up"</span></span><br><span class="line">    <span class="keyword">elif</span> food_dir == <span class="string">"down"</span>:</span><br><span class="line">        <span class="keyword">if</span> direction != <span class="string">"up"</span>:</span><br><span class="line">            direction = <span class="string">"down"</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#设置蛇的移动方向</span></span><br><span class="line">    <span class="keyword">if</span> direction == <span class="string">"up"</span>: snake.velocity = Point(<span class="number">0</span>,<span class="number">-1</span>)</span><br><span class="line">    <span class="keyword">elif</span> direction == <span class="string">"down"</span>: snake.velocity = Point(<span class="number">0</span>,<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">elif</span> direction == <span class="string">"left"</span>: snake.velocity = Point(<span class="number">-1</span>,<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">elif</span> direction == <span class="string">"right"</span>: snake.velocity = Point(<span class="number">1</span>,<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>注：<br>看完了函数，发现真的如注释中所说，是简单自动寻路不是复杂自动寻路<br>函数也存在一个BUG，在蛇方向和食物方向相反时，不能自动（绕圈）转变蛇方向<br>所以在这种情况下，蛇不能简单自动寻路</p>
+<h3 id="获得蛇当前的方向函数get-current-direction"><a href="#获得蛇当前的方向函数get-current-direction" class="headerlink" title="获得蛇当前的方向函数get_current_direction()"></a>获得蛇当前的方向函数get_current_direction()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#获得蛇当前的方向</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_current_direction</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> head_x,head_y</span><br><span class="line">    <span class="keyword">global</span> img_size</span><br><span class="line">    first_segment_x = snake.segments[<span class="number">1</span>].X//img_size</span><br><span class="line">    first_segment_y = snake.segments[<span class="number">1</span>].Y//img_size</span><br><span class="line">    <span class="keyword">if</span> head_x<span class="number">-1</span> == first_segment_x:   <span class="keyword">return</span> <span class="string">"right"</span></span><br><span class="line">    <span class="keyword">elif</span> head_x+<span class="number">1</span> == first_segment_x: <span class="keyword">return</span> <span class="string">"left"</span></span><br><span class="line">    <span class="keyword">elif</span> head_y<span class="number">-1</span> == first_segment_y: <span class="keyword">return</span> <span class="string">"down"</span></span><br><span class="line">    <span class="keyword">elif</span> head_y+<span class="number">1</span> == first_segment_y: <span class="keyword">return</span> <span class="string">"up"</span></span><br></pre></td></tr></table></figure> 
+
+<h3 id="获得食物的方向函数get-food-direction"><a href="#获得食物的方向函数get-food-direction" class="headerlink" title="获得食物的方向函数get_food_direction()"></a>获得食物的方向函数get_food_direction()</h3><figure class="highlight python"><figcaption><span>SnakeGame.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#获得食物的坐标</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_food_direction</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> head_x,head_y</span><br><span class="line">    <span class="keyword">global</span> img_size</span><br><span class="line">    food = Point(<span class="number">0</span>,<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">for</span> obj <span class="keyword">in</span> food_group:</span><br><span class="line">        food = Point(obj.X//img_size,obj.Y//img_size)</span><br><span class="line">    <span class="keyword">if</span> head_x &lt; food.x:       <span class="keyword">return</span> <span class="string">"right"</span></span><br><span class="line">    <span class="keyword">elif</span> head_x &gt; food.x:     <span class="keyword">return</span> <span class="string">"left"</span></span><br><span class="line">    <span class="keyword">elif</span> head_x == food.x:</span><br><span class="line">        <span class="keyword">if</span> head_y &lt; food.y:   <span class="keyword">return</span> <span class="string">"down"</span></span><br><span class="line">        <span class="keyword">elif</span> head_y &gt; food.y: <span class="keyword">return</span> <span class="string">"up"</span></span><br></pre></td></tr></table></figure> 
+
+<h2 id="代码修改"><a href="#代码修改" class="headerlink" title="代码修改"></a>代码修改</h2><p>看完上述代码之后，你会发现在加入墙之后<br>简单自动寻路基本处于完全无法使用的状态（因为无法判断前进路上是否有墙）</p>
+<p>等待更新～</p>
+<p>最后更新时间：2017年6月11日 17:11</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Simo Lin
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/" title="Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification)">http://simolin.cn/2017/06/07/Python-Pygame-SnakeGame-CodeModification/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/05/27/CTF-Cryptography/" rel="prev" title="CTF 密码学（CTF Cryptography）">
+      <i class="fa fa-chevron-left"></i> CTF 密码学（CTF Cryptography）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/06/13/GCTF-2017-writeup/" rel="next" title="全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup)">
+      全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDA4Ny8xMDYyNQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#先解压查看文件"><span class="nav-number">1.</span> <span class="nav-text">先解压查看文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码分析"><span class="nav-number">2.</span> <span class="nav-text">代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MyLibrary-py"><span class="nav-number">2.1.</span> <span class="nav-text">MyLibrary.py</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SnakeGame-py"><span class="nav-number">2.2.</span> <span class="nav-text">SnakeGame.py</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Food类"><span class="nav-number">2.2.1.</span> <span class="nav-text">Food类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SnakeSegment类"><span class="nav-number">2.2.2.</span> <span class="nav-text">SnakeSegment类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Snake类"><span class="nav-number">2.2.3.</span> <span class="nav-text">Snake类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化函数game-init"><span class="nav-number">2.2.4.</span> <span class="nav-text">初始化函数game_init()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加载图片函数load-pic"><span class="nav-number">2.2.5.</span> <span class="nav-text">加载图片函数load_pic()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#随机返回图片函数create-pic"><span class="nav-number">2.2.6.</span> <span class="nav-text">随机返回图片函数create_pic()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加载音频函数audio-init"><span class="nav-number">2.2.7.</span> <span class="nav-text">加载音频函数audio_init()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#播放声音函数play-sound"><span class="nav-number">2.2.8.</span> <span class="nav-text">播放声音函数play_sound()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主程序"><span class="nav-number">2.2.9.</span> <span class="nav-text">主程序</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修改代码"><span class="nav-number">3.</span> <span class="nav-text">修改代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SnakeGame-py-1"><span class="nav-number">3.1.</span> <span class="nav-text">SnakeGame.py</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#增加-Wall类"><span class="nav-number">3.1.1.</span> <span class="nav-text">增加 Wall类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增加-create-wall-pic"><span class="nav-number">3.1.2.</span> <span class="nav-text">增加 create_wall_pic()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增加代码-在game-init-中-初始化墙"><span class="nav-number">3.1.3.</span> <span class="nav-text">增加代码 在game_init()中 初始化墙</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增加代码-在主程序中-判断是否撞到墙"><span class="nav-number">3.1.4.</span> <span class="nav-text">增加代码 在主程序中 判断是否撞到墙</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#增加代码-在主程序对应位置-刷新墙"><span class="nav-number">3.1.5.</span> <span class="nav-text">增加代码 在主程序对应位置 刷新墙</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#测试"><span class="nav-number">4.</span> <span class="nav-text">测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#修改前"><span class="nav-number">4.1.</span> <span class="nav-text">修改前</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改后"><span class="nav-number">4.2.</span> <span class="nav-text">修改后</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#有趣的东西"><span class="nav-number">5.</span> <span class="nav-text">有趣的东西</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#自动寻路？"><span class="nav-number">5.1.</span> <span class="nav-text">自动寻路？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简单自动寻路函数auto-move"><span class="nav-number">5.1.1.</span> <span class="nav-text">简单自动寻路函数auto_move()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获得蛇当前的方向函数get-current-direction"><span class="nav-number">5.1.2.</span> <span class="nav-text">获得蛇当前的方向函数get_current_direction()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获得食物的方向函数get-food-direction"><span class="nav-number">5.1.3.</span> <span class="nav-text">获得食物的方向函数get_food_direction()</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码修改"><span class="nav-number">5.2.</span> <span class="nav-text">代码修改</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Simo Lin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Simo Lin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/simolin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;simolin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Simo Lin</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"2fwF7Lp1Rnm8L6hGlqFArPLG-gzGzoHsz","app_key":"pREEdhA82ajw2RJSwHwJI8WI","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

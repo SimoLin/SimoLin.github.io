@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"simolin.cn","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="比赛时间:24小时(2017年6月10日上午09：00-6月11日09：00)很开心能参加这次比赛，遗憾的是自己做的题目还是太少了，重在参与吧 【本文仅为学习目的，如有侵权，请联系我删除】">
+<meta property="og:type" content="article">
+<meta property="og:title" content="全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup)">
+<meta property="og:url" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/index.html">
+<meta property="og:site_name" content="Simo Lin&#39;s blog">
+<meta property="og:description" content="比赛时间:24小时(2017年6月10日上午09：00-6月11日09：00)很开心能参加这次比赛，遗憾的是自己做的题目还是太少了，重在参与吧 【本文仅为学习目的，如有侵权，请联系我删除】">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/stage1_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/stage1_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/stage1_3.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/stage1_4.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/stage1_5.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_3.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_4.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_5.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_6.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_7.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_8.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_9.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_10.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_11.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_12.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/vcode_13.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/test.pyc_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/test.pyc_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/test.pyc_3.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/test.pyc_4.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/ReverseMe_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/ReverseMe_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/ReverseMe_3.jpg">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/ReverseMe_4.jpg">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/spring-css_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_3.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_4.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_5.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/RCE%E7%BB%95%E8%BF%87_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/RCE%E7%BB%95%E8%BF%87_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_3.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_4.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_5.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_6.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_7.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_8.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_9.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_10.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_11.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_12.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_13.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_14.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_15.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_16.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_17.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_18.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/Forbidden_19.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E7%83%AD%E8%BA%AB%E9%A2%98_1.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E7%83%AD%E8%BA%AB%E9%A2%98_2.png">
+<meta property="og:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/%E7%83%AD%E8%BA%AB%E9%A2%98_3.png">
+<meta property="article:published_time" content="2017-06-13T05:43:46.000Z">
+<meta property="article:modified_time" content="2020-05-24T01:56:24.740Z">
+<meta property="article:author" content="Simo Lin">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="Writeup">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://simolin.cn/2017/06/13/GCTF-2017-writeup/stage1_1.png">
+
+<link rel="canonical" href="http://simolin.cn/2017/06/13/GCTF-2017-writeup/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup) | Simo Lin's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Simo Lin's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Simo Lin's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-favorite">
+
+    <a href="/favorite/" rel="section"><i class="fa fa-fw fa-star"></i>favorite</a>
+
+  </li>
+        <li class="menu-item menu-item-comments">
+
+    <a href="/comments/" rel="section"><i class="fa fa-fw fa-comments"></i>comments</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://simolin.cn/2017/06/13/GCTF-2017-writeup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Simo Lin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simo Lin's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-06-13 13:43:46" itemprop="dateCreated datePublished" datetime="2017-06-13T13:43:46+08:00">2017-06-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-24 09:56:24" itemprop="dateModified" datetime="2020-05-24T09:56:24+08:00">2020-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index"><span itemprop="name">CTF</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/06/13/GCTF-2017-writeup/" class="post-meta-item leancloud_visitors" data-flag-title="全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup)" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>比赛时间:24小时(2017年6月10日上午09：00-6月11日09：00)<br>很开心能参加这次比赛，遗憾的是自己做的题目还是太少了，重在参与吧</p>
+<p>【本文仅为学习目的，如有侵权，请联系我删除】</p>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>本次比赛一共20题：</p>
+<ul>
+<li>Misc 共3题</li>
+<li><ul>
+<li>Stage1<br>图片隐写，python反编译</li>
+</ul>
+</li>
+<li><ul>
+<li>test.pyc<br>python反编译,去除stop code</li>
+</ul>
+</li>
+<li><ul>
+<li>reverseMe<br>文件反转</li>
+</ul>
+</li>
+<li>Reverse 共3题</li>
+<li><ul>
+<li>Hackme<br>elf可执行文件逆向分析，堆栈不平衡</li>
+</ul>
+</li>
+<li><ul>
+<li>debug.exe<br>C#语言.Net程序逆向分析</li>
+</ul>
+</li>
+<li><ul>
+<li>密码加密<br>jsp文件、jar包分析</li>
+</ul>
+</li>
+<li>Web 共11题</li>
+<li><ul>
+<li>PHP序列化</li>
+</ul>
+</li>
+<li><ul>
+<li>spring-css<br>存在已知漏洞CVE-2014-3625</li>
+</ul>
+</li>
+<li><ul>
+<li>注入越权<br>引号、十六进制绕过</li>
+</ul>
+</li>
+<li><ul>
+<li>条件竞争<br>数据库操作无死锁</li>
+</ul>
+</li>
+<li><ul>
+<li>读文件<br>绕过WAF、过滤</li>
+</ul>
+</li>
+<li><ul>
+<li>WEB综合<br>一句话木马爆破</li>
+</ul>
+</li>
+<li><ul>
+<li>RCE绕过<br>十六进制绕过</li>
+</ul>
+</li>
+<li><ul>
+<li>JAVA序列化<br>如题</li>
+</ul>
+</li>
+<li><ul>
+<li>变态验证码怎么破<br>验证码绕过、爆破密码</li>
+</ul>
+</li>
+<li><ul>
+<li>Forbidden<br>修改HTTP请求头信息、hex</li>
+</ul>
+</li>
+<li><ul>
+<li>热身题<br>robots.txt</li>
+</ul>
+</li>
+<li>Mobile 共2题</li>
+<li><ul>
+<li>APK逆向<br>反编译，分析代码</li>
+</ul>
+</li>
+<li><ul>
+<li>APK逆向2<br>XML文件</li>
+</ul>
+</li>
+<li>Pwn 共1题</li>
+<li><ul>
+<li>FTP</li>
+</ul>
+</li>
+</ul>
+<p>涉及或需要使用Python脚本的题目共5题：Stage1、test.pyc、reverseMe、条件竞争、WEB综合<br>涉及抓包或需要使用Burpsuite的题目共2题：变态验证码怎么破、Forbidden<br>（注：有些题目抓不抓包都可以，则不计入）</p>
+<table>
+<thead>
+<tr>
+<th>战队</th>
+<th>GUT_CityU</th>
+<th>su-Root</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全部排名</td>
+<td>89</td>
+<td>101</td>
+</tr>
+<tr>
+<td>港澳台排名</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>得分</td>
+<td>896</td>
+<td>704</td>
+</tr>
+<tr>
+<td>解题数</td>
+<td>5</td>
+<td>4</td>
+</tr>
+</tbody></table>
+<h1 id="自己做出来的题目"><a href="#自己做出来的题目" class="headerlink" title="自己做出来的题目"></a>自己做出来的题目</h1><h2 id="Misc"><a href="#Misc" class="headerlink" title="Misc"></a>Misc</h2><h3 id="stage1"><a href="#stage1" class="headerlink" title="stage1"></a>stage1</h3><p>下载得到一张PNG图片</p>
+<img src="/2017/06/13/GCTF-2017-writeup/stage1_1.png" class="">
+<p>首先肯定是想到是否该文件其实不是PNG格式（隐藏了其它文件）<br>用winhex查看文件头，发现确实应该只是一张PNG图</p>
+<p>使用Stegsolve打开查看各个颜色通道<br>在green plane 1通道发现一张二维码</p>
+<img src="/2017/06/13/GCTF-2017-writeup/stage1_2.png" class="">
+<p>截图保存二维码</p>
+<img src="/2017/06/13/GCTF-2017-writeup/stage1_3.png" class="">
+<p>进行反相（颜色取反）</p>
+<img src="/2017/06/13/GCTF-2017-writeup/stage1_4.png" class="">
+<p>扫码得到一串字符串</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">03F30D0AB6266A576300000000000000000100000040000000730D0000006400008400005A00006401005328020000006300000000030000000800000043000000734E0000006401006402006403006404006405006406006405006407006708007D00006408007D0100781E007C0000445D16007D02007C01007400007C0200830100377D0100712B00577C010047486400005328090000004E6941000000696C000000697000000069680000006961000000694C0000006962000000740000000028010000007403000000636872280300000074030000007374727404000000666C6167740100000069280000000028000000007307000000746573742E7079520300000001000000730A00000000011E0106010D0114014E280100000052030000002800000000280000000028000000007307000000746573742E707974080000003C6D6F64756C653E010000007300000000</span><br></pre></td></tr></table></figure>
+<p>猜测为十六进制串，使用winhex保存为文件</p>
+<img src="/2017/06/13/GCTF-2017-writeup/stage1_5.png" class="">
+<p>发现为python的pyc格式，保存为test.pyc<br>反编译得到代码</p>
+<figure class="highlight python"><figcaption><span>test.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flag</span><span class="params">()</span>:</span></span><br><span class="line">    str = [<span class="number">65</span>, <span class="number">108</span>, <span class="number">112</span>, <span class="number">104</span>, <span class="number">97</span>, <span class="number">76</span>, <span class="number">97</span>, <span class="number">98</span>]</span><br><span class="line">    flag = <span class="string">''</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> str:</span><br><span class="line">        flag += chr(i)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">print</span> flag</span><br></pre></td></tr></table></figure>
+<p>运行得到flag：AlphaLab<br>注：Python反编译可使用<a href="https://tool.lu/pyc/" target="_blank" rel="noopener">在线反编译工具</a></p>
+<h2 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h2><h3 id="变态验证码怎么破"><a href="#变态验证码怎么破" class="headerlink" title="变态验证码怎么破"></a>变态验证码怎么破</h3><p>打开网站发现是登陆界面</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_1.png" class="">
+<p>注释中提示用户名为ADMIN，密码在password.txt文件中</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_2.png" class="">
+<p>下载password.txt文件，里面是1000个可能的密码，想到爆破密码</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_3.png" class="">
+<p>但是有验证码，尝试使用Python pytesseract识别验证码，再爆破【该步骤只是思路】</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_4.png" class="">
+<p>可惜正如题目“变态验证码怎么破”，这道题中的验证码是16位的字母+数字<br>pytesseract对此的识别率太低，爆破1000个密码需要的时间太长，遂放弃。</p>
+<p>转而想到绕过验证码<br>设置好代理，使用Burpsuit抓包【注：此处验证码需要输入正确】<br>即网站返回结果提示必须为username or password error，不能是vcode error<br>将抓到的包发送到intruder<br>然后将包forward【注：一定要forward！！！必须先验证成功一次验证码】<br>此处网页应返回提示username or password error</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_5.png" class="">
+<p>转到intruder，positions页，去掉所有的$$，只保留password变量的$$，去掉验证码的值</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_6.png" class="">
+<p>转到payloads页，点击load，加载前面下载好的password.txt</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_7.png" class="">
+<p>password.txt中的所有密码都会加载进来</p>
+<p>换到options页，给网页返回结果加判断，方便寻找结果<br>先点击clear清除所有，在加上error提示</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_8.png" class="">
+<p>即只提示error即可，并关闭exclude HTTP headers提示</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_9.png" class="">
+<p>Intruder——start attack开始爆破</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_10.png" class="">
+<p>耐心等待爆破完成（此处只列出部分图）</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_11.png" class="">
+<p>前面我们设置了error判断，所以只关注error一列即可<br>凡是打勾的表示网页返回的都是提示username or password error<br>即密码错误，所以找没打勾的一项即可<br>发现第595行的密码wjsddslh未提示错误，即该密码正确</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_12.png" class="">
+<p>查看网页返回值response</p>
+<img src="/2017/06/13/GCTF-2017-writeup/vcode_13.png" class="">
+<p>可以看到GCTF{Qb8HR4pGmScMqgxTSwP7QZmb}，即本题flag</p>
+<h1 id="其他人的Writeup总结"><a href="#其他人的Writeup总结" class="headerlink" title="其他人的Writeup总结"></a>其他人的Writeup总结</h1><p>注：本文引用内容只为学习目的，如有侵权，请联系我删除</p>
+<h2 id="Misc-1"><a href="#Misc-1" class="headerlink" title="Misc"></a>Misc</h2><h3 id="test-pyc"><a href="#test-pyc" class="headerlink" title="test.pyc"></a>test.pyc</h3><p>下载下来为一个pyc文件</p>
+<img src="/2017/06/13/GCTF-2017-writeup/test.pyc_1.png" class="">
+<p>同样想到反编译，提示部分代码没有反编译成功</p>
+<img src="/2017/06/13/GCTF-2017-writeup/test.pyc_2.png" class="">
+<p>使用Winhex打开pyc文件<br>分析得知在flag3()前面有STOP_CODE<br>将四个00改成09(nop)可顺利反编译（引用自附录[1]）</p>
+<img src="/2017/06/13/GCTF-2017-writeup/test.pyc_3.png" class="">
+<p>得到python代码，修改得到</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"></span><br><span class="line">str = <span class="string">'=cWbihGfyMzNllzZ'</span>+<span class="string">'0cjZzMW'</span>+<span class="string">'N5cTM4Y'</span>+<span class="string">'jYygTOy'</span> + <span class="string">'cmNycWNyYmM1Ujf'</span></span><br><span class="line"><span class="comment">#注：笔者这里使用在线反编译无法完全反编译出该字符串，该字符串引用自附录[1]</span></span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flag1</span><span class="params">()</span>:</span></span><br><span class="line">    code = str[::<span class="number">-3</span>]</span><br><span class="line">    result = <span class="string">''</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> code:</span><br><span class="line">        ss = ord(i) - <span class="number">1</span></span><br><span class="line">        result += chr(ss)</span><br><span class="line">    <span class="keyword">print</span> (result[::<span class="number">-1</span>])</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flag2</span><span class="params">()</span>:</span></span><br><span class="line">    code = str[::<span class="number">-2</span>]</span><br><span class="line">    result = <span class="string">''</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> code:</span><br><span class="line">        ss = ord(i) - <span class="number">1</span></span><br><span class="line">        result += chr(ss)</span><br><span class="line">    <span class="keyword">print</span> (result[::<span class="number">-2</span>])</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">flag3</span><span class="params">()</span>:</span></span><br><span class="line">    code = str[::<span class="number">-1</span>]</span><br><span class="line">    code = base64.b64decode(code)  <span class="comment">#（base64解密输出结果为bytes，需转为str）</span></span><br><span class="line">    <span class="keyword">print</span> (code)            <span class="comment">#额外添加的语句 输出base64解密后的字符串</span></span><br><span class="line">                            <span class="comment">#额外添加的语句 直接使code等于base64解密后的字符串</span></span><br><span class="line">    code = <span class="string">"~552f25g26g2982b681795c3f74g9e732|hbmg"</span>     <span class="comment">#base64解密结果</span></span><br><span class="line">    result = <span class="string">''</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> code:</span><br><span class="line">        ss = ord(i) - <span class="number">1</span>     <span class="comment">#直接运行反编译后的代码Python3此处存在报错，原因见上()括号内容</span></span><br><span class="line">        result += chr(ss)</span><br><span class="line">    <span class="keyword">print</span> (result[::<span class="number">-1</span>])</span><br><span class="line">flag1()</span><br><span class="line">flag2()</span><br><span class="line">flag3()</span><br></pre></td></tr></table></figure>
+<p>运行得到flag{126d8f36e2b486075a1781f51f41e144}</p>
+<img src="/2017/06/13/GCTF-2017-writeup/test.pyc_4.png" class="">
+<p>这里也附上R00t战队Writeup中的python反编译脚本（笔者同样在Python3下无法运行，感兴趣可以自行尝试）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> dis, marshal, struct, sys, time, types</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_file</span><span class="params">(fname)</span>:</span></span><br><span class="line">    f = open(fname, <span class="string">"rb"</span>)</span><br><span class="line">    magic = f.read(<span class="number">4</span>)</span><br><span class="line">    moddate = f.read(<span class="number">4</span>)</span><br><span class="line">    modtime = time.asctime(time.localtime(struct.unpack(<span class="string">'I'</span>, moddate)[<span class="number">0</span>]))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"magic %s"</span> % (magic.encode(<span class="string">'hex'</span>)))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"moddate %s (%s)"</span> % (moddate.encode(<span class="string">'hex'</span>), modtime))</span><br><span class="line">    code = marshal.load(f)</span><br><span class="line">    show_code(code)</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_code</span><span class="params">(code, indent=<span class="string">''</span>)</span>:</span></span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%scode"</span> % indent)</span><br><span class="line">    indent += <span class="string">'   '</span></span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sargcount %d"</span> % (indent, code.co_argcount))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%snlocals %d"</span> % (indent, code.co_nlocals))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sstacksize %d"</span> % (indent, code.co_stacksize))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sflags %04x"</span> % (indent, code.co_flags))</span><br><span class="line">    show_hex(<span class="string">"code"</span>, code.co_code, indent=indent)</span><br><span class="line">    dis.disassemble(code)</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sconsts"</span> % indent)</span><br><span class="line">    <span class="keyword">for</span> const <span class="keyword">in</span> code.co_consts:</span><br><span class="line">        <span class="keyword">if</span> type(const) == types.CodeType:</span><br><span class="line">            show_code(const, indent+<span class="string">'   '</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">print</span> (<span class="string">"   %s%r"</span> % (indent, const))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%snames %r"</span> % (indent, code.co_names))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%svarnames %r"</span> % (indent, code.co_varnames))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sfreevars %r"</span> % (indent, code.co_freevars))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%scellvars %r"</span> % (indent, code.co_cellvars))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sfilename %r"</span> % (indent, code.co_filename))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sname %r"</span> % (indent, code.co_name))</span><br><span class="line">    <span class="keyword">print</span> (<span class="string">"%sfirstlineno %d"</span> % (indent, code.co_firstlineno))</span><br><span class="line">    show_hex(<span class="string">"lnotab"</span>, code.co_lnotab, indent=indent)</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_hex</span><span class="params">(label, h, indent)</span>:</span></span><br><span class="line">    h = h.encode(<span class="string">'hex'</span>)</span><br><span class="line">    <span class="keyword">if</span> len(h) &lt; <span class="number">60</span>:</span><br><span class="line">        <span class="keyword">print</span> (<span class="string">"%s%s %s"</span> % (indent, label, h))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">print</span> (<span class="string">"%s%s"</span> % (indent, label))</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, len(h), <span class="number">60</span>):</span><br><span class="line">            <span class="keyword">print</span> (<span class="string">"%s   %s"</span> % (indent, h[i:i+<span class="number">60</span>]))</span><br><span class="line">            </span><br><span class="line">show_file(<span class="string">"1.pyc"</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="ReverseMe"><a href="#ReverseMe" class="headerlink" title="ReverseMe"></a>ReverseMe</h3><p>下载后为一个.reverseMe后缀文件（Reverse的中文意思是反转、颠倒）</p>
+<img src="/2017/06/13/GCTF-2017-writeup/ReverseMe_1.png" class="">
+<p>使用winhex打开后发现是.jpg文件 十六进制值颠倒后的结果<br>如下，原字符串应为 Adobe Photoshop CS6 Windows 2016:10:24 11:57:30</p>
+<img src="/2017/06/13/GCTF-2017-writeup/ReverseMe_2.png" class="">
+<p>故编写脚本得：（该脚本运行比较慢）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(<span class="string">"ae0c42b1-5e0d-4600-abc8-40f36a763061.reverseMe"</span>, <span class="string">"rb"</span>) <span class="keyword">as</span> file:</span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">"result.jpg"</span>, <span class="string">"wb"</span>) <span class="keyword">as</span> jpg:    </span><br><span class="line">        data = []</span><br><span class="line">        byte = file.read(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">while</span> byte != <span class="string">b""</span>:</span><br><span class="line">            data.append(byte)</span><br><span class="line">            byte = file.read(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> reversed(data):</span><br><span class="line">            jpg.write(i)</span><br></pre></td></tr></table></figure>
+<p>运行得到一张图片，打开如下</p>
+<img src="/2017/06/13/GCTF-2017-writeup/ReverseMe_3.jpg" class="">
+<p>镜面反转得到flag</p>
+<img src="/2017/06/13/GCTF-2017-writeup/ReverseMe_4.jpg" class="">
+
+<h2 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h2><h3 id="Hackme"><a href="#Hackme" class="headerlink" title="Hackme"></a>Hackme</h3><h3 id="debug-exe"><a href="#debug-exe" class="headerlink" title="debug.exe"></a>debug.exe</h3><h3 id="密码加密"><a href="#密码加密" class="headerlink" title="密码加密"></a>密码加密</h3><h2 id="Web-1"><a href="#Web-1" class="headerlink" title="Web"></a>Web</h2><h3 id="PHP序列化"><a href="#PHP序列化" class="headerlink" title="PHP序列化"></a>PHP序列化</h3><h3 id="spring-css"><a href="#spring-css" class="headerlink" title="spring-css"></a>spring-css</h3><p>使用AWVS扫描，发现CVE-2014-3625漏洞</p>
+
+<p>漏洞使用方法<br><a href="http://218.2.197.232:18015/spring-css/resources/file:/etc/flag" target="_blank" rel="noopener">http://218.2.197.232:18015/spring-css/resources/file:/etc/flag</a></p>
+<img src="/2017/06/13/GCTF-2017-writeup/spring-css_2.png" class="">
+
+<h3 id="注入越权"><a href="#注入越权" class="headerlink" title="注入越权"></a>注入越权</h3><p>源代码提示需要uid=0且role=admin</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_1.png" class="">
+<p>使用Brupsuite抓包</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_2.png" class="">
+<p>修改payload，加入 &amp;uid=0,role=0x61646d696e</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_3.png" class="">
+<p>Forward得到flag</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_4.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/%E6%B3%A8%E5%85%A5%E8%B6%8A%E6%9D%83_5.png" class="">
+
+<h3 id="条件竞争"><a href="#条件竞争" class="headerlink" title="条件竞争"></a>条件竞争</h3><p>题目可查看源码如下</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89_1.png" class="">
+<p>由题目提示可知<br>用户是否有权限是通过查询数据库中 notadmin 一列是否为 true 来判断的</p>
+<p>而重置用户信息的过程为先删除原本的用户信息，再插入新的用户信息<br>在这个过程中，存在一小段时间，notadmin 一列的值不为 true<br>此时查询用户信息，用户就具备了管理员权限</p>
+<p>即重置密码与登录函数之间存在竞争（操作数据库时没有锁死数据库操作）<br>编写脚本重复重置密码和登录，如下，即可得到GCTF{KBnLGG6qR2ZdYe4HbUL8XpAP}</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89_2.png" class="">
+<p>脚本代码如下：</p>
+<figure class="highlight python"><figcaption><span>login.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">'http://218.2.197.242:18009/login.php?method=login'</span></span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'Cookie'</span>:<span class="string">'PHPSESSID=u40qo7g1pfmaqrqgvfv54npog2'</span>,  <span class="comment">#需要修改为自己的Session ID</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">'name'</span>:<span class="string">'cac5000af8fe6fd0'</span>,   <span class="comment">#修改为自己的用户名</span></span><br><span class="line">    <span class="string">'password'</span>:<span class="string">'123456'</span>          <span class="comment">#修改为自己的密码</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">True</span>):</span><br><span class="line">    result = requests.post(url = url,data = data,headers = headers)</span><br><span class="line">    <span class="keyword">if</span>(result.text != <span class="string">r'无权限'</span> <span class="keyword">and</span> result.text != <span class="string">r'用户名或密码错误'</span>):</span><br><span class="line">        print(result.text)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><figcaption><span>change.py</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">'http://218.2.197.242:18009/index.php?method=reset'</span></span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'Cookie'</span>:<span class="string">'PHPSESSID=u40qo7g1pfmaqrqgvfv54npog2'</span>,  <span class="comment">#需要修改为自己的Session ID</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">'name'</span>:<span class="string">'cac5000af8fe6fd0'</span>,   <span class="comment">#修改为自己的用户名</span></span><br><span class="line">    <span class="string">'password'</span>:<span class="string">'123456'</span>          <span class="comment">#修改为自己的密码</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(<span class="literal">True</span>):</span><br><span class="line">    result = requests.post(url = url,data = data,headers = headers)</span><br><span class="line">    <span class="keyword">if</span>(result.text == <span class="string">r'修改成功'</span>):</span><br><span class="line">        print(result.text)</span><br></pre></td></tr></table></figure>
+
+<h3 id="读文件"><a href="#读文件" class="headerlink" title="读文件"></a>读文件</h3><h3 id="WEB综合"><a href="#WEB综合" class="headerlink" title="WEB综合"></a>WEB综合</h3><h3 id="RCE绕过"><a href="#RCE绕过" class="headerlink" title="RCE绕过"></a>RCE绕过</h3><p>原网址 <a href="http://218.2.197.232:18006/?cmd=test" target="_blank" rel="noopener">http://218.2.197.232:18006/?cmd=test</a> 结果为执行curltestflag.php</p>
+<img src="/2017/06/13/GCTF-2017-writeup/RCE%E7%BB%95%E8%BF%87_1.png" class="">
+<p>使用%0a替换空格，%09代替.<br>即会执行cat flag.php命令，成功get flag</p>
+<img src="/2017/06/13/GCTF-2017-writeup/RCE%E7%BB%95%E8%BF%87_2.png" class="">
+
+<h3 id="JAVA序列化"><a href="#JAVA序列化" class="headerlink" title="JAVA序列化"></a>JAVA序列化</h3><h3 id="Forbidden"><a href="#Forbidden" class="headerlink" title="Forbidden"></a>Forbidden</h3><p>直接访问显示403页面,返回头信息是200，说明是假的假的假的403</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_1.png" class="">
+<p>使用Burpsuite抓包，并send to repeater</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_2.png" class="">
+<p>源码提示1.只允许本机访问，设置X-forwarded-for: localhost（127.0.0.1无效）</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_3.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_4.png" class="">
+<p>go之后得到<br>源码提示2.只能通过域名访问,设置Host: <a href="http://www.topsec.com" target="_blank" rel="noopener">www.topsec.com</a></p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_5.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_6.png" class="">
+<p>go之后得到<br>源码提示3.只允许从百度跳转到本页面访问,设置 Referer: <a href="http://www.baidu.com" target="_blank" rel="noopener">http://www.baidu.com</a></p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_7.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_8.png" class="">
+<p>go之后得到<br>源码提示4.只允许使用ajax访问本页面,设置X-Requested-With:XMLHttpRequest</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_9.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_10.png" class="">
+<p>go之后得到<br>源码提示5.只允许ie4访问，设置User-Agent: Mozilla/4.0 (compatible; MSIE 4.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_11.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_12.png" class="">
+<p>go之后得到<br>源码提示6.电脑上必须装有.NET8，设置User-Agent: Mozilla/4.0 (compatible; MSIE 4.0; Windows NT 5.1; SV1; .NET CLR 8.0.50727)</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_13.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_14.png" class="">
+<p>go之后得到<br>源码提示7.只允许德国用户访问,设置Accept-Language: de-DE,de;</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_15.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_16.png" class="">
+<p>go之后得到<br>提示8.提示没有登录，同时返回的请求包里面显示:Set-Cookie: login=4e6a59324d545a6a4e7a4d324e513d3d</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_17.png" class="">
+<p>添加cookie为login=4e6a59324d545a6a4e7a4d324e513d3d，<br>经过hex-base64-hex解码得到false（即改为true即可）<br>将true经过hex-base64-hex编码之后得到4e7a51334d6a63314e6a553d<br>于是设置: Cookie: login=4e7a51334d6a63314e6a553d</p>
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_18.png" class="">
+<img src="/2017/06/13/GCTF-2017-writeup/Forbidden_19.png" class="">
+
+<h3 id="热身题"><a href="#热身题" class="headerlink" title="热身题"></a>热身题</h3><p>打开网址得到一句提示</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E7%83%AD%E8%BA%AB%E9%A2%98_1.png" class="">
+<p>查看robots.txt文件发现目录</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E7%83%AD%E8%BA%AB%E9%A2%98_2.png" class="">
+<p>在rob0t.php中发现flag</p>
+<img src="/2017/06/13/GCTF-2017-writeup/%E7%83%AD%E8%BA%AB%E9%A2%98_3.png" class="">
+
+<h2 id="Moblie"><a href="#Moblie" class="headerlink" title="Moblie"></a>Moblie</h2><h3 id="APK逆向"><a href="#APK逆向" class="headerlink" title="APK逆向"></a>APK逆向</h3><h3 id="APK逆向2"><a href="#APK逆向2" class="headerlink" title="APK逆向2"></a>APK逆向2</h3><h2 id="Pwn"><a href="#Pwn" class="headerlink" title="Pwn"></a>Pwn</h2><h3 id="FTP"><a href="#FTP" class="headerlink" title="FTP"></a>FTP</h3><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p>非常感谢以下列出的与未列出的各篇文章与资料，本文内容为学习了以下资料的产物<br>再次表示忠心的感谢</p>
+<p>本文中也引用了以下资料中的部分图片、文字等<br>【本文仅为学习目的，如有侵权，请联系我删除】</p>
+<p>[1]<a href="https://www.xctf.org.cn/information/8fff0eb06016734668a7d723fffffed95708243e/" target="_blank" rel="noopener">GCTF 2017 WriteUp —— r00t</a></p>
+<p>本文最后更新于 2017/6/15 14:35</p>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Simo Lin
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://simolin.cn/2017/06/13/GCTF-2017-writeup/" title="全球华人网络安全技能大赛初赛 总结(GCTF 2017 Writeup)">http://simolin.cn/2017/06/13/GCTF-2017-writeup/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+              <a href="/tags/Writeup/" rel="tag"># Writeup</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/06/07/Python-Pygame-SnakeGame-CodeModification/" rel="prev" title="Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification)">
+      <i class="fa fa-chevron-left"></i> Pygame 贪吃蛇小游戏 代码修改(Pygame SnakeGame Code Modification)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/02/14/Java-JDK-environment-variables-configuration/" rel="next" title="Java JDK 配置环境变量(Java JDK environment variables configuration)">
+      Java JDK 配置环境变量(Java JDK environment variables configuration) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDA4Ny8xMDYyNQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#自己做出来的题目"><span class="nav-number">2.</span> <span class="nav-text">自己做出来的题目</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Misc"><span class="nav-number">2.1.</span> <span class="nav-text">Misc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#stage1"><span class="nav-number">2.1.1.</span> <span class="nav-text">stage1</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web"><span class="nav-number">2.2.</span> <span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#变态验证码怎么破"><span class="nav-number">2.2.1.</span> <span class="nav-text">变态验证码怎么破</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#其他人的Writeup总结"><span class="nav-number">3.</span> <span class="nav-text">其他人的Writeup总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Misc-1"><span class="nav-number">3.1.</span> <span class="nav-text">Misc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#test-pyc"><span class="nav-number">3.1.1.</span> <span class="nav-text">test.pyc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ReverseMe"><span class="nav-number">3.1.2.</span> <span class="nav-text">ReverseMe</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reverse"><span class="nav-number">3.2.</span> <span class="nav-text">Reverse</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hackme"><span class="nav-number">3.2.1.</span> <span class="nav-text">Hackme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#debug-exe"><span class="nav-number">3.2.2.</span> <span class="nav-text">debug.exe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#密码加密"><span class="nav-number">3.2.3.</span> <span class="nav-text">密码加密</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web-1"><span class="nav-number">3.3.</span> <span class="nav-text">Web</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP序列化"><span class="nav-number">3.3.1.</span> <span class="nav-text">PHP序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spring-css"><span class="nav-number">3.3.2.</span> <span class="nav-text">spring-css</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注入越权"><span class="nav-number">3.3.3.</span> <span class="nav-text">注入越权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#条件竞争"><span class="nav-number">3.3.4.</span> <span class="nav-text">条件竞争</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#读文件"><span class="nav-number">3.3.5.</span> <span class="nav-text">读文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WEB综合"><span class="nav-number">3.3.6.</span> <span class="nav-text">WEB综合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RCE绕过"><span class="nav-number">3.3.7.</span> <span class="nav-text">RCE绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JAVA序列化"><span class="nav-number">3.3.8.</span> <span class="nav-text">JAVA序列化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Forbidden"><span class="nav-number">3.3.9.</span> <span class="nav-text">Forbidden</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#热身题"><span class="nav-number">3.3.10.</span> <span class="nav-text">热身题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Moblie"><span class="nav-number">3.4.</span> <span class="nav-text">Moblie</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#APK逆向"><span class="nav-number">3.4.1.</span> <span class="nav-text">APK逆向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#APK逆向2"><span class="nav-number">3.4.2.</span> <span class="nav-text">APK逆向2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pwn"><span class="nav-number">3.5.</span> <span class="nav-text">Pwn</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FTP"><span class="nav-number">3.5.1.</span> <span class="nav-text">FTP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Simo Lin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Simo Lin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/simolin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;simolin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Simo Lin</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"2fwF7Lp1Rnm8L6hGlqFArPLG-gzGzoHsz","app_key":"pREEdhA82ajw2RJSwHwJI8WI","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>

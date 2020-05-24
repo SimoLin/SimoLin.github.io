@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"simolin.cn","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="CTF（Capture The Flag）中文一般译作夺旗赛，在网络安全领域中指的是网络安全技术人员之间进行技术竞技的一种比赛形式CTF起源于1996年DEFCON全球黑客大会，以代替之前黑客们通过互相发起真实攻击进行技术比拼的方式发展至今，已经成为全球范围网络安全圈流行的竞赛形式比赛的大致流程是，参赛团队通过完成题目、或者队伍之间进行网络攻防等方式率先从主办方给出的题目或比赛环境中得到一串具有一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CTF 介绍以及相关学习资源（CTF Introduction）">
+<meta property="og:url" content="http://simolin.cn/2017/05/27/CTF-Introduction/index.html">
+<meta property="og:site_name" content="Simo Lin&#39;s blog">
+<meta property="og:description" content="CTF（Capture The Flag）中文一般译作夺旗赛，在网络安全领域中指的是网络安全技术人员之间进行技术竞技的一种比赛形式CTF起源于1996年DEFCON全球黑客大会，以代替之前黑客们通过互相发起真实攻击进行技术比拼的方式发展至今，已经成为全球范围网络安全圈流行的竞赛形式比赛的大致流程是，参赛团队通过完成题目、或者队伍之间进行网络攻防等方式率先从主办方给出的题目或比赛环境中得到一串具有一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Reverse-1.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Reverse-2.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Crypto-1.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Crypto-2.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Crypto-3.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Android-1.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Android-2.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Android-3.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Android-4.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Web-1.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Web-2.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Web-3.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Recon-1.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Recon-2.png">
+<meta property="og:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Forensic-1.png">
+<meta property="article:published_time" content="2017-05-27T03:21:26.000Z">
+<meta property="article:modified_time" content="2020-05-24T01:56:24.730Z">
+<meta property="article:author" content="Simo Lin">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://simolin.cn/2017/05/27/CTF-Introduction/Reverse-1.png">
+
+<link rel="canonical" href="http://simolin.cn/2017/05/27/CTF-Introduction/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CTF 介绍以及相关学习资源（CTF Introduction） | Simo Lin's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Simo Lin's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Simo Lin's blog</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-favorite">
+
+    <a href="/favorite/" rel="section"><i class="fa fa-fw fa-star"></i>favorite</a>
+
+  </li>
+        <li class="menu-item menu-item-comments">
+
+    <a href="/comments/" rel="section"><i class="fa fa-fw fa-comments"></i>comments</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://simolin.cn/2017/05/27/CTF-Introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Simo Lin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simo Lin's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CTF 介绍以及相关学习资源（CTF Introduction）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-05-27 11:21:26" itemprop="dateCreated datePublished" datetime="2017-05-27T11:21:26+08:00">2017-05-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-24 09:56:24" itemprop="dateModified" datetime="2020-05-24T09:56:24+08:00">2020-05-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CTF/" itemprop="url" rel="index"><span itemprop="name">CTF</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/05/27/CTF-Introduction/" class="post-meta-item leancloud_visitors" data-flag-title="CTF 介绍以及相关学习资源（CTF Introduction）" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="CTF（Capture-The-Flag）"><a href="#CTF（Capture-The-Flag）" class="headerlink" title="CTF（Capture The Flag）"></a>CTF（Capture The Flag）</h1><p>中文一般译作<strong>夺旗赛</strong>，在网络安全领域中指的是网络安全技术人员之间进行技术竞技的一种比赛形式<br>CTF起源于1996年DEFCON全球黑客大会，以代替之前黑客们通过互相发起真实攻击进行技术比拼的方式<br>发展至今，已经成为全球范围网络安全圈流行的竞赛形式<br>比赛的大致流程是，参赛团队通过完成题目、或者队伍之间进行网络攻防等方式<br>率先从主办方给出的题目或比赛环境中<strong>得到一串具有一定格式的字符串</strong>或其他内容，并将其提交给主办方，从而夺得分数</p>
+<blockquote>
+<p>这样的内容称为“Flag”，如：flag_A&amp;D{I_LOVE_A&amp;D}</p>
+</blockquote>
+<p>【本文仅为学习目的，如有侵权，请联系我删除】</p>
+<a id="more"></a>
+
+<h2 id="CTF竞赛模式"><a href="#CTF竞赛模式" class="headerlink" title="CTF竞赛模式"></a>CTF竞赛模式</h2><p>具体可分为以下三类：</p>
+<h3 id="解题模式（Jeopardy）"><a href="#解题模式（Jeopardy）" class="headerlink" title="解题模式（Jeopardy）"></a>解题模式（Jeopardy）</h3><p>在解题模式CTF赛制中，参赛队伍可以通过互联网或者现场网络参与，以解决网络安全技术挑战题目的分值和时间来排名<br>题目主要包含逆向、漏洞挖掘与利用、Web渗透、密码、取证、隐写、安全编程等类别</p>
+<h3 id="攻防模式（Attack-Defense）"><a href="#攻防模式（Attack-Defense）" class="headerlink" title="攻防模式（Attack-Defense）"></a>攻防模式（Attack-Defense）</h3><p>在攻防模式CTF赛制中，参赛队伍在网络空间互相进行攻击和防守<br>挖掘网络服务漏洞并攻击对手服务来得分，修补自身服务漏洞进行防御来避免丢分</p>
+<h3 id="混合模式（Mix）"><a href="#混合模式（Mix）" class="headerlink" title="混合模式（Mix）"></a>混合模式（Mix）</h3><p>结合了解题模式与攻防模式的CTF赛制，比如参赛队伍通过解题可以获取一些初始分数<br>然后通过攻防对抗进行得分增减的零和游戏，最终以得分高低分出胜负</p>
+<h2 id="CTF比赛主要题型"><a href="#CTF比赛主要题型" class="headerlink" title="CTF比赛主要题型"></a>CTF比赛主要题型</h2><ol>
+<li>Misc（杂项，即结合多种下述类型的题目）</li>
+<li>Reverse（逆向分析）</li>
+<li>Crypto（密码、加密解密、安全编程）</li>
+<li>Mobile（apk，安卓，ios）</li>
+<li>Exploit（漏洞利用）</li>
+<li>Web（Web应用的漏洞挖掘和利用）</li>
+<li>Recon（社工、情报搜集分析）</li>
+<li>Forensic（网络流量分析、隐写分析、系统取证）</li>
+</ol>
+<p>可以根据自己的兴趣选择合适的方向入门</p>
+<p>接下来就以每个方向举一道例题（题目类型和做题思路）来做一个简单的介绍：<br>注：<br>①Misc为杂项（多个方向合题），所以不单独举例<br>②举例只讲题目内容和解题思路，不讲具体解题方式！！因为不同题目解题方式不同</p>
+<h2 id="题型简介"><a href="#题型简介" class="headerlink" title="题型简介"></a>题型简介</h2><h3 id="Reverse（逆向分析）"><a href="#Reverse（逆向分析）" class="headerlink" title="Reverse（逆向分析）"></a>Reverse（逆向分析）</h3><img src="/2017/05/27/CTF-Introduction/Reverse-1.png" class="" title="Reverse-1">
+<p>如上图为  2015广州强网杯  原题 KeyGenMe 150分<br>题目文件格式：.exe<br>题目提示：用户名：gdqwb<br>题目目标：找一个可用注册码SN，即图中pass</p>
+<p>一般解题思路：<br>先用查壳软件（如：ExeinfoPe）查壳，有壳先脱壳。（不懂可以先留着没关系）<br>然后根据程序不同丢进不同软件进行分析，一般用OD、IDA等<br>然后就是分析程序代码了~！（一般是汇编语言，如下图）</p>
+<img src="/2017/05/27/CTF-Introduction/Reverse-2.png" class="" title="Reverse-2">
+<p>具体分析过程就不讲了，主要是了解解题过程~<br>了解程序是如何判断pass之后就可以得到pass，得到本题flag</p>
+<h3 id="Crypto（密码、加密解密、安全编程）"><a href="#Crypto（密码、加密解密、安全编程）" class="headerlink" title="Crypto（密码、加密解密、安全编程）"></a>Crypto（密码、加密解密、安全编程）</h3><img src="/2017/05/27/CTF-Introduction/Crypto-1.png" class="" title="Crypto-1">
+<p>如上图为  2015广州强网杯  原题 正确的密码 50分<br>题目提示：4e8f794089bl6b4ef55cd0399dca1433c<br>题目目标：找出原密码</p>
+<p>没接触过CTF的童鞋可能看到这道题目会有点懵，其实这道题比较简单，毕竟分数只有50分<br>在了解了常见的加密方式（<a href="http://simolin.cn/2017/05/27/CTF-Cryptography/">可见于博客里另一篇关于CTF密码学的文章</a>）之后<br>可以一眼看出4e8f794089bl6b4ef55cd0399dca1433c该字符串为md5加密<br>但如果直接拿去md5解密会发现有错误，因为很明显，该字符串不符合md5的要求<br>md5一般为16位或32位，而该字符串为33位</p>
+<img src="/2017/05/27/CTF-Introduction/Crypto-2.png" class="" title="Crypto-2">
+<p>而到底是多出了哪一个字符？如果一个一个试就比较麻烦了<br>事实上，md5加密后不会出现l字符，所以l字符是多余的<br>去掉l字符后，字符串变为4e8f794089b6b4ef55cd0399dca1433c<br>解密后得到：huang，即为该题flag</p>
+<img src="/2017/05/27/CTF-Introduction/Crypto-3.png" class="" title="Crypto-3">
+
+<h3 id="Mobile（apk，安卓，ios）"><a href="#Mobile（apk，安卓，ios）" class="headerlink" title="Mobile（apk，安卓，ios）"></a>Mobile（apk，安卓，ios）</h3><img src="/2017/05/27/CTF-Introduction/Android-1.png" class="" title="Android-1">
+<p>如上图为  2015广州强网杯  原题 初露锋芒 200分<br>题目文件格式：.apk（安卓app格式）<br>题目提示：biu！Biu！Biu！<br>题目目标：找到name和pass</p>
+<p>一般解题思路：<br>该题类似前面讲过的Windows逆向题目，其实这是一道安卓逆向题目，所以目标和过程都是类似的<br>通过分析该程序的代码，逆向得到正确的name和pass，得到flag<br>但是具体的解题方式和Windows逆向题还是不太一样的，首先改变.apk为.rar<br>（apk本质上和rar类似，感兴趣可以自行了解），解压得到主程序文件classes.dex</p>
+<img src="/2017/05/27/CTF-Introduction/Android-2.png" class="" title="Android-2">
+<p>接着利用工具dex2jar将classes.dex转换为jar格式</p>
+<img src="/2017/05/27/CTF-Introduction/Android-3.png" class="" title="Android-3">
+<p>再用软件jd-gui-windows-1.4.0打开，即可看到软件的反编译代码</p>
+<img src="/2017/05/27/CTF-Introduction/Android-4.png" class="" title="Android-4">
+<p>然后就是分析程序代码了~！（逆向题一般都是分析代码）<br>得到找到name和pass即可获得flag</p>
+<h3 id="Exploit（漏洞利用）"><a href="#Exploit（漏洞利用）" class="headerlink" title="Exploit（漏洞利用）"></a>Exploit（漏洞利用）</h3><p>漏洞利用题目类似Windows逆向，一般会给一个服务器的地址，该服务器上运行着一个程序<br>题目一般会给出该程序的源代码，让选手去研究分析程序，找出程序的漏洞<br>过程类似Windows逆向，但更考研对堆栈的操作（常见的漏洞有缓冲区溢出、格式化漏洞等）<br>这里就不具体举例，主要还是分析代码</p>
+<h3 id="Web（Web应用的漏洞挖掘和利用）"><a href="#Web（Web应用的漏洞挖掘和利用）" class="headerlink" title="Web（Web应用的漏洞挖掘和利用）"></a>Web（Web应用的漏洞挖掘和利用）</h3><p>web题目考点多，有XSS、SQL注入、任意文件上传、CSRF、ssrf等等<br>有时候也会考验选手的脑洞，有难的也有简单的题目</p>
+<img src="/2017/05/27/CTF-Introduction/Web-1.png" class="" title="Web-1">
+<p>如上图为  2015广州强网杯  原题 远程管理系统 100分<br>题目目标：找出flag<br>打开题目网址后，如下图所示：</p>
+<img src="/2017/05/27/CTF-Introduction/Web-2.png" class="" title="Web-2">
+<p>如图可见是一个“远程管理系统”，依正常的思维就必须获取正确的帐号密码登录进去<br>这里忽略如何找到正确的帐号密码过程(使用or 1 = 1 ‘绕过验证)，正确登录后如下图：<br>发现是控制台，利用命令找到flag文件打开得到flag</p>
+<img src="/2017/05/27/CTF-Introduction/Web-3.png" class="" title="Web-3">
+<p>Web类题目就是从Web应用中（用各种方法）获取flag。</p>
+<h3 id="Recon（社工、情报搜集分析）"><a href="#Recon（社工、情报搜集分析）" class="headerlink" title="Recon（社工、情报搜集分析）"></a>Recon（社工、情报搜集分析）</h3><img src="/2017/05/27/CTF-Introduction/Recon-1.png" class="" title="Recon-1">
+<p>如上图为  2015广州强网杯  原题 女神在哪儿 500分<br>题目提示：压缩包中有和女神的一些聊天记录，1张手机截图，和2张十分模糊的实地照片<br>题目目标：找出女神的地址（即为flag）</p>
+<img src="/2017/05/27/CTF-Introduction/Recon-2.png" class="" title="Recon-2">
+<p>题目的素材里给的线索有：<br>温州机场附近十几公里、有山有湖、天气、酒店图、手机截图、2张模糊的照片<br>简单讲就是要从这些线索里找到女神的地址……<br>社工题一般脑洞挺大的，这道题也差不多，至少小编我当时比赛的时候没做出来</p>
+<p>具体分析过程就不写了，社工题目基本就是这样了~</p>
+<h3 id="Forensic（网络流量分析、隐写分析、系统取证）"><a href="#Forensic（网络流量分析、隐写分析、系统取证）" class="headerlink" title="Forensic（网络流量分析、隐写分析、系统取证）"></a>Forensic（网络流量分析、隐写分析、系统取证）</h3><img src="/2017/05/27/CTF-Introduction/Forensic-1.png" class="" title="Forensic-1">
+<p>一般流量分析题目使用的软件是wireshark，如图：<br>通过分析网络流量中数据包的内容，找出需要的信息，得到flag</p>
+<h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p>简单介绍完了各个方向的题目解题过程，你有对哪个方向产生兴趣吗？<br>是否也想投入CTF比赛中来呢？</p>
+<h3 id="推荐一些有关CTF的文章："><a href="#推荐一些有关CTF的文章：" class="headerlink" title="推荐一些有关CTF的文章："></a>推荐一些有关CTF的文章：</h3><p>对于哪个方向感兴趣可以自行了解更详细的内容~</p>
+<p><a href="http://www.freebuf.com/articles/others-articles/36927.html" target="_blank" rel="noopener">如何开始你的CTF比赛之旅</a>——翻译：赵阳</p>
+<h3 id="CTF练习平台"><a href="#CTF练习平台" class="headerlink" title="CTF练习平台"></a>CTF练习平台</h3><p><a href="https://www.ichunqiu.com/racing" target="_blank" rel="noopener">i春秋 竞赛训练</a><br><a href="http://captf.com/" target="_blank" rel="noopener">ctf题目</a><br><a href="http://oj.xctf.org.cn" target="_blank" rel="noopener">XCTF_OJ练习平台</a><br><a href="http://www.shiyanbar.com/ctf/" target="_blank" rel="noopener">实验吧</a><br><a href="http://hackinglab.cn/" target="_blank" rel="noopener">网络信息安全攻防学习平台</a><br><a href="http://www.baimaoxueyuan.com/ctf" target="_blank" rel="noopener">白帽学院ctf挑战赛</a><br><a href="http://www.hetianlab.com/CTFrace.html" target="_blank" rel="noopener">合天ctf</a></p>
+<h3 id="学习平台"><a href="#学习平台" class="headerlink" title="学习平台"></a>学习平台</h3><p><a href="http://wooyun.org/" target="_blank" rel="noopener">乌云</a><br><a href="https://www.ichunqiu.com/" target="_blank" rel="noopener">i春秋</a><br><a href="http://www.w3school.com.cn/" target="_blank" rel="noopener">w3school</a><br><a href="http://www.liaoxuefeng.com/" target="_blank" rel="noopener">廖雪峰</a></p>
+<h3 id="学习论坛"><a href="#学习论坛" class="headerlink" title="学习论坛"></a>学习论坛</h3><p><a href="http://www.52pojie.cn/" target="_blank" rel="noopener">吾爱破解</a><br><a href="http://www.chinapyg.com/" target="_blank" rel="noopener">飘云阁</a><br><a href="http://bbs.pediy.com/" target="_blank" rel="noopener">看雪论坛</a></p>
+<h3 id="附："><a href="#附：" class="headerlink" title="附："></a>附：</h3><p><a href="https://ctftime.org/event/list/upcoming" target="_blank" rel="noopener">CTF预告</a>——CTFtime</p>
+<h4 id="国际知名CTF赛事"><a href="#国际知名CTF赛事" class="headerlink" title="国际知名CTF赛事:"></a>国际知名CTF赛事:</h4><ul>
+<li><strong>DEFCON CTF</strong>：CTF赛事中的“世界杯”</li>
+<li>UCSB iCTF：来自UCSB的面向世界高校的CTF</li>
+<li>Plaid CTF：包揽多项赛事冠军的CMU的PPP团队举办的在线解题赛</li>
+<li>Boston Key Party：近年来崛起的在线解题赛</li>
+<li>Codegate CTF：韩国首尔“大奖赛”，冠军奖金3000万韩元</li>
+<li>Secuinside CTF：韩国首尔“大奖赛”，冠军奖金3000万韩元</li>
+<li>XXC3 CTF：欧洲历史最悠久CCC黑客大会举办的CTF</li>
+<li>SIGINT CTF：德国CCCAC协会另一场解题模式竞赛</li>
+<li>Hack.lu CTF：卢森堡黑客会议同期举办的CTF</li>
+<li>EBCTF：荷兰老牌强队Eindbazen组织的在线解题赛</li>
+<li>Ghost in the Shellcode：由Marauders和Men in Black Hats共同组织的在线解题赛</li>
+<li>RwthCTF：由德国0ldEur0pe组织的在线攻防赛</li>
+<li>RuCTF：由俄罗斯Hackerdom组织，解题模式资格赛面向全球参赛，解题攻防混合模式的决赛</li>
+<li>RuCTFe：由俄罗斯Hackerdom组织面向全球参赛队伍的在线攻防赛</li>
+<li>PHD CTF：俄罗斯Positive Hacking Day会议同期举办的CT</li>
+</ul>
+<h4 id="国内知名CTF赛事"><a href="#国内知名CTF赛事" class="headerlink" title="国内知名CTF赛事:"></a>国内知名CTF赛事:</h4><ul>
+<li><strong>XCTF</strong>全国联赛：<br>中国网络空间安全协会竞评演练工作组主办、南京赛宁承办、KEEN TEAM协办的全国性网络安全赛事平台<br>2014-2015赛季五站选拔赛分别由清华、上交、浙大、杭电和成信技术团队组织<br>（包括杭电HCTF、成信SCTF、清华BCTF、上交0CTF和浙大ACTF）<br>XCTF联赛总决赛由蓝莲花战队组织，XCTF联赛提供100万元奖励池，<br>是国内最权威、最高技术水平与最大影响力的网络安全CTF赛事平台。</li>
+<li><strong>AliCTF</strong>：由阿里巴巴公司组织，面向在校学生的CTF竞赛，冠军奖金10万元加BlackHat全程费用。</li>
+<li>XDCTF：由西安电子科技大学信息安全协会组织的CTF竞赛，其特点是偏向于渗透实战经验。</li>
+<li>HCTF：由杭州电子科技大学信息安全协会承办组织的CTF。<br>杭州电子科技大学信息安全协会由杭州电子科技大学通信工程学院组织建立，协会已有七年历史，<br>曾经出征DEFCON,BCTF等大型比赛并取得优异成绩，同时协会还有大量有影响力的软件作品。<br>协会内部成员由热爱黑客技术和计算机技术的一些在校大学生组成，<br>有多个研究方向，主要有渗透，逆向，内核，web等多个研究方向。<br>至今已经成功举办6次CTF比赛。</li>
+<li>ISCC：由北理工组织的传统网络安全竞赛，最近两年逐渐转向CTF赛制。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>非常感谢以下列出的与未列出的各篇文章与资料，本文内容为学习了以下资料的产物<br>再次表示忠心的感谢</p>
+<p>本文中也引用了以下资料中的部分图片、文字等<br>【本文仅为学习目的，如有侵权，请联系我删除】</p>
+<ol>
+<li><p><a href="http://blog.csdn.net/the__blue__sky/article/details/51763080" target="_blank" rel="noopener">CTF 各类资源大整合</a>——不改长流</p>
+</li>
+<li><p><a href="http://baike.baidu.com/item/ctf/9548546" target="_blank" rel="noopener">CTF——百度百科</a></p>
+</li>
+<li><p><a href="https://www.ichunqiu.com/course/1055" target="_blank" rel="noopener">CTF的过去、现在与未来</a>——诸葛建伟</p>
+<p>最后更新时间：2017年5月27日 23:51:29</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Simo Lin
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://simolin.cn/2017/05/27/CTF-Introduction/" title="CTF 介绍以及相关学习资源（CTF Introduction）">http://simolin.cn/2017/05/27/CTF-Introduction/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CTF/" rel="tag"># CTF</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2017/05/27/CTF-Cryptography/" rel="next" title="CTF 密码学（CTF Cryptography）">
+      CTF 密码学（CTF Cryptography） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zNDA4Ny8xMDYyNQ=="></div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CTF（Capture-The-Flag）"><span class="nav-number">1.</span> <span class="nav-text">CTF（Capture The Flag）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CTF竞赛模式"><span class="nav-number">1.1.</span> <span class="nav-text">CTF竞赛模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#解题模式（Jeopardy）"><span class="nav-number">1.1.1.</span> <span class="nav-text">解题模式（Jeopardy）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#攻防模式（Attack-Defense）"><span class="nav-number">1.1.2.</span> <span class="nav-text">攻防模式（Attack-Defense）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#混合模式（Mix）"><span class="nav-number">1.1.3.</span> <span class="nav-text">混合模式（Mix）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CTF比赛主要题型"><span class="nav-number">1.2.</span> <span class="nav-text">CTF比赛主要题型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#题型简介"><span class="nav-number">1.3.</span> <span class="nav-text">题型简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Reverse（逆向分析）"><span class="nav-number">1.3.1.</span> <span class="nav-text">Reverse（逆向分析）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Crypto（密码、加密解密、安全编程）"><span class="nav-number">1.3.2.</span> <span class="nav-text">Crypto（密码、加密解密、安全编程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mobile（apk，安卓，ios）"><span class="nav-number">1.3.3.</span> <span class="nav-text">Mobile（apk，安卓，ios）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Exploit（漏洞利用）"><span class="nav-number">1.3.4.</span> <span class="nav-text">Exploit（漏洞利用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Web（Web应用的漏洞挖掘和利用）"><span class="nav-number">1.3.5.</span> <span class="nav-text">Web（Web应用的漏洞挖掘和利用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Recon（社工、情报搜集分析）"><span class="nav-number">1.3.6.</span> <span class="nav-text">Recon（社工、情报搜集分析）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Forensic（网络流量分析、隐写分析、系统取证）"><span class="nav-number">1.3.7.</span> <span class="nav-text">Forensic（网络流量分析、隐写分析、系统取证）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它"><span class="nav-number">1.4.</span> <span class="nav-text">其它</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#推荐一些有关CTF的文章："><span class="nav-number">1.4.1.</span> <span class="nav-text">推荐一些有关CTF的文章：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CTF练习平台"><span class="nav-number">1.4.2.</span> <span class="nav-text">CTF练习平台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习平台"><span class="nav-number">1.4.3.</span> <span class="nav-text">学习平台</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习论坛"><span class="nav-number">1.4.4.</span> <span class="nav-text">学习论坛</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#附："><span class="nav-number">1.4.5.</span> <span class="nav-text">附：</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#国际知名CTF赛事"><span class="nav-number">1.4.5.1.</span> <span class="nav-text">国际知名CTF赛事:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#国内知名CTF赛事"><span class="nav-number">1.4.5.2.</span> <span class="nav-text">国内知名CTF赛事:</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">1.5.</span> <span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Simo Lin"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Simo Lin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/simolin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;simolin" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Simo Lin</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+<script>
+  (function() {
+    function leancloudSelector(url) {
+      url = encodeURI(url);
+      return document.getElementById(url).querySelector('.leancloud-visitors-count');
+    }
+
+    function addCount(Counter) {
+      var visitors = document.querySelector('.leancloud_visitors');
+      var url = decodeURI(visitors.id);
+      var title = visitors.dataset.flagTitle;
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          if (results.length > 0) {
+            var counter = results[0];
+            leancloudSelector(url).innerText = counter.time + 1;
+            Counter('put', '/classes/Counter/' + counter.objectId, { time: { '__op': 'Increment', 'amount': 1 } })
+              .catch(error => {
+                console.error('Failed to save visitor count', error);
+              });
+          } else {
+              leancloudSelector(url).innerText = 'Counter not initialized! More info at console err msg.';
+              console.error('ATTENTION! LeanCloud counter has security bug, see how to solve it here: https://github.com/theme-next/hexo-leancloud-counter-security. \n However, you can still use LeanCloud without security, by setting `security` option to `false`.');
+            
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    function showTime(Counter) {
+      var visitors = document.querySelectorAll('.leancloud_visitors');
+      var entries = [...visitors].map(element => {
+        return decodeURI(element.id);
+      });
+
+      Counter('get', '/classes/Counter?where=' + encodeURIComponent(JSON.stringify({ url: { '$in': entries } })))
+        .then(response => response.json())
+        .then(({ results }) => {
+          for (let url of entries) {
+            let target = results.find(item => item.url === url);
+            leancloudSelector(url).innerText = target ? target.time : 0;
+          }
+        })
+        .catch(error => {
+          console.error('LeanCloud Counter Error', error);
+        });
+    }
+
+    let { app_id, app_key, server_url } = {"enable":true,"app_id":"2fwF7Lp1Rnm8L6hGlqFArPLG-gzGzoHsz","app_key":"pREEdhA82ajw2RJSwHwJI8WI","server_url":null,"security":true};
+    function fetchData(api_server) {
+      var Counter = (method, url, data) => {
+        return fetch(`${api_server}/1.1${url}`, {
+          method,
+          headers: {
+            'X-LC-Id'     : app_id,
+            'X-LC-Key'    : app_key,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+      };
+      if (CONFIG.page.isPost) {
+        if (CONFIG.hostname !== location.hostname) return;
+        addCount(Counter);
+      } else if (document.querySelectorAll('.post-title-link').length >= 1) {
+        showTime(Counter);
+      }
+    }
+
+    let api_server = app_id.slice(-9) !== '-MdYXbMMI' ? server_url : `https://${app_id.slice(0, 8).toLowerCase()}.api.lncldglobal.com`;
+
+    if (api_server) {
+      fetchData(api_server);
+    } else {
+      fetch('https://app-router.leancloud.cn/2/route?appId=' + app_id)
+        .then(response => response.json())
+        .then(({ api_server }) => {
+          fetchData('https://' + api_server);
+        });
+    }
+  })();
+</script>
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+NexT.utils.loadComments(document.querySelector('#lv-container'), () => {
+  window.livereOptions = {
+    refer: location.pathname.replace(CONFIG.root, '').replace('index.html', '')
+  };
+  (function(d, s) {
+    var j, e = d.getElementsByTagName(s)[0];
+    if (typeof LivereTower === 'function') { return; }
+    j = d.createElement(s);
+    j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+    j.async = true;
+    e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+});
+</script>
+
+</body>
+</html>
