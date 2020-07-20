@@ -16,11 +16,13 @@ categories:
 
 可以使用本工具：
 
-功能|shiro rememberMe encode 加密|shiro rememberMe decode 解密
+
+功能|加密|解密
 ---|---|---
-特性|支持 shiro 常见 100 key|支持 shiro 常见 100 key 遍历识别解密
-|支持 ysoserial CommonsBeanutils1、CommonsCollections 1-10|支持 ysoserial CommonsBeanutils1、CommonsCollections 1-10 遍历识别
-||支持执行命令内容识别
+AES key 特性|支持 shiro 常见 100 key|支持 shiro 常见 100 key 遍历识别解密
+ysoserial 特性|支持 ysoserial CommonsBeanutils1、CommonsCollections 1-10|支持 ysoserial CommonsBeanutils1、CommonsCollections 1-10 遍历识别
+其他|/|支持执行命令内容识别
+
 
 【本文仅为学习目的，如有侵权，请联系我删除】
 <!-- more -->
@@ -29,21 +31,24 @@ categories:
 
 打开页面即可使用，所见即所得，应该不用多解释
 
-功能|shiro rememberMe encode 加密|shiro rememberMe decode 解密
+
+功能|加密|解密
 ---|---|---
 输入（必填）|选择加密使用的 AES_key|要解密的内容
-|选择加密使用的 ysoserial_option|
-|要加密的命令内容 command|
+/|选择加密使用的 ysoserial_option|/
+/|要加密的命令内容 command|/
 输出|加密结果|自动识别使用的 AES_key
-||自动识别使用的 ysoserial_option
-||自动识别执行的命令内容 command
-||解密结果
+/|/|自动识别使用的 ysoserial_option
+/|/|自动识别执行的命令内容 command
+/|/|解密结果
+
 
 {% asset_img webapp-shiro.png webapp-shiro %}
 
 # 部署方法（前端页面）
 
 项目地址：https://github.com/M-Kings/WEB-shiro_rememberMe_encode_decode
+
 项目前端基于 Vue + ElementUI 实现
 
 ## 本地打开
