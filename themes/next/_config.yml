@@ -699,7 +699,7 @@ cnzz_siteid:
 # AppID and AppKey are recommended to be the same as valine's for counter compatibility.
 # Do not enable both `valine.visitor` and `leancloud_visitors`.
 leancloud_visitors:
-  enable: true
+  enable: false
   app_id: 2fwF7Lp1Rnm8L6hGlqFArPLG-gzGzoHsz
   app_key: pREEdhA82ajw2RJSwHwJI8WI
   # Required for apps from CN region
