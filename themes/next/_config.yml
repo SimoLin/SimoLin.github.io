@@ -500,6 +500,15 @@ baidu_push: false
 #   - CDNJS (cdnjs.cloudflare.com), provided by cloudflare
 # ---------------------------------------------------------------
 
+# Extensions
+plugins:
+  hexo-generator-feed
+#Feed Atom
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+
 # Math Formulas Render Support
 math:
   # Default (true) will load mathjax / katex script on demand.
